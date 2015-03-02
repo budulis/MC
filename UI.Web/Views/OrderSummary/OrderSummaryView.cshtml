@@ -1,0 +1,33 @@
+﻿@inherits Nancy.ViewEngines.Razor.NancyRazorViewBase<UI.Web.Models.OrderSummaryViewModel>
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="utf-8" />
+	<title>Products</title>
+</head>
+<body>
+
+	<table>
+		<thead>
+			<tr>
+				<td><strong>Id</strong></td>
+				<td><strong>Ordered products</strong></td>
+				<td><strong>Total</strong></td>
+				<td><strong>Status</strong></td>
+				<td><strong>At</strong></td>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var p in @Model.Orders) {
+				<tr>
+					<td>@p.Id</td>
+					<td>@p.Products</td>
+					<td>@p.Total.ToString("##.###")</td>
+					<td>@p.Status</td>
+					<td>@p.Created</td>
+				</tr>
+		 }
+		</tbody>
+	</table>
+</body>
+</html>

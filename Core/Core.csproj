@@ -1,0 +1,153 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{695F73D5-C1AD-455E-AA02-BD609B4FF4B2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Core</RootNamespace>
+    <AssemblyName>Core</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Polly">
+      <HintPath>..\packages\Polly.2.2.0\lib\net45\Polly.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Domain\Aggregate.cs" />
+    <Compile Include="Domain\Contexts\Ordering\Commands\CompleteOrder.cs" />
+    <Compile Include="Domain\Contexts\Ordering\Commands\CreateSelfServiceOrder.cs" />
+    <Compile Include="Domain\Contexts\Ordering\Events\WebOrderCreated.cs" />
+    <Compile Include="Domain\Contexts\Ordering\Messages\OrderCompletedNotificationMessage.cs" />
+    <Compile Include="Domain\Contexts\Ordering\Messages\OrderCreatedNotificationMessage.cs" />
+    <Compile Include="Application\Messages\OrderStartedApplicationNotificationMessage.cs" />
+    <Compile Include="Domain\Contexts\Ordering\Messages\OrderStartedNotificationMessage.cs" />
+    <Compile Include="Domain\Contexts\Ordering\Events\OrderStartFailed.cs" />
+    <Compile Include="Domain\Contexts\Ordering\Messages\OrderStartFailedNotificationMessage.cs" />
+    <Compile Include="Domain\Contexts\Ordering\Exceptions\CashierException.cs" />
+    <Compile Include="Domain\Contexts\Ordering\Exceptions\DomainException.cs" />
+    <Compile Include="Domain\Contexts\Ordering\Exceptions\OrderException.cs" />
+    <Compile Include="Domain\Contexts\Ordering\Messages\SelfServiceOrderCreatedNotificationMessage.cs" />
+    <Compile Include="Domain\Contexts\Ordering\OrderStatus.cs" />
+    <Compile Include="Domain\Contexts\Ordering\PaymentReceipt.cs" />
+    <Compile Include="Domain\Contexts\Ordering\SelfServiceOrder.cs" />
+    <Compile Include="Domain\Contexts\Production\Messages\ProductionOrderCompletedNotificationMessage.cs" />
+    <Compile Include="Domain\Contexts\Production\Events\ProductionOrderCreated.cs" />
+    <Compile Include="Domain\Contexts\Production\Events\ProductionOrderCompleted.cs" />
+    <Compile Include="Domain\Contexts\Production\Messages\ProductionOrderCreatedNotificationMessage.cs" />
+    <Compile Include="Application\Messages\IApplicationEventNotificationMessage.cs" />
+    <Compile Include="Domain\IDomainEventNotificationMessage.cs" />
+    <Compile Include="FclExtensions\FclExtensions.cs" />
+    <Compile Include="FclExtensions\SingleThreadedSynchronizationContext.cs" />
+    <Compile Include="FclExtensions\ThreadEx.cs" />
+    <Compile Include="Handlers\Exceptions\CommandExecutionException.cs" />
+    <Compile Include="Handlers\HandlerForCreateSelfServiceOrder.cs" />
+    <Compile Include="ILoggerAsync.cs" />
+    <Compile Include="InfrastructureService.cs" />
+    <Compile Include="ISerializable.cs" />
+    <Compile Include="ReadModel\OrderReadModel.cs" />
+    <Compile Include="Guard.cs" />
+    <Compile Include="Handlers\Handler.cs" />
+    <Compile Include="Handlers\HandlerForCreateOrder.cs" />
+    <Compile Include="Handlers\HandlerForCreateProductionOrder.cs" />
+    <Compile Include="Handlers\HandlerForPayForOrder.cs" />
+    <Compile Include="Handlers\HandlerForProduceProductionOrder.cs" />
+    <Compile Include="IApplicationEventDispather.cs" />
+    <Compile Include="ICashierRepository.cs" />
+    <Compile Include="IChefRepository.cs" />
+    <Compile Include="IDomainCommandDispather.cs" />
+    <Compile Include="IDomainEventDispather.cs" />
+    <Compile Include="IEventStore.cs" />
+    <Compile Include="IInfrastructureService.cs" />
+    <Compile Include="ILogger.cs" />
+    <Compile Include="Domain\LoyaltyCardType.cs" />
+    <Compile Include="Domain\Contexts\Ordering\Payment.cs" />
+    <Compile Include="Domain\PaymentType.cs" />
+    <Compile Include="Domain\Contexts\Ordering\Commands\CreateOrder.cs" />
+    <Compile Include="Domain\IOrderCommand.cs" />
+    <Compile Include="Domain\Contexts\Ordering\Cashier.cs" />
+    <Compile Include="Domain\Contexts\Ordering\Events\IOrderEvent.cs" />
+    <Compile Include="Domain\NullId.cs" />
+    <Compile Include="Domain\Contexts\Ordering\Order.cs" />
+    <Compile Include="Domain\Id.cs" />
+    <Compile Include="Domain\IDomainCommand.cs" />
+    <Compile Include="Domain\IDomainEvent.cs" />
+    <Compile Include="Domain\IEntity.cs" />
+    <Compile Include="Domain\IValueObject.cs" />
+    <Compile Include="Domain\Contexts\Ordering\Events\OrderCompleted.cs" />
+    <Compile Include="Domain\Contexts\Ordering\Events\OrderCreated.cs" />
+    <Compile Include="Domain\Contexts\Ordering\Events\OrderStarted.cs" />
+    <Compile Include="Domain\Product.cs" />
+    <Compile Include="Domain\Contexts\Production\Chef.cs" />
+    <Compile Include="Domain\Contexts\Production\Commands\CreateProductionOrder.cs" />
+    <Compile Include="Domain\Contexts\Production\IProductionOrderEvent.cs" />
+    <Compile Include="Domain\Contexts\Production\Commands\ProduceProductionOrder.cs" />
+    <Compile Include="Domain\Contexts\Production\ProductionOrder.cs" />
+    <Compile Include="Domain\Contexts\Ordering\Commands\PayForOrder.cs" />
+    <Compile Include="Handlers\HandlerForCompleteOrder.cs" />
+    <Compile Include="Handlers\IHandler.cs" />
+    <Compile Include="IApplicationCommand.cs" />
+    <Compile Include="IDiscountService.cs" />
+    <Compile Include="ICardPaymentService.cs" />
+    <Compile Include="PaymentServiceException.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReadModel\IReadModelRepository.cs" />
+    <Compile Include="ReadModel\IReadModel.cs" />
+    <Compile Include="ReadModel\ReceiptReadModel.cs" />
+    <Compile Include="Subscribers\OnOrderCreated.cs" />
+    <Compile Include="Subscribers\OnOrderStarted.cs" />
+    <Compile Include="Subscribers\OnOrderStartFailed.cs" />
+    <Compile Include="Subscribers\OnProductionOrderCompleted.cs" />
+    <Compile Include="Subscribers\OnProductionOrderCreated.cs" />
+    <Compile Include="Subscribers\OnOrderCompleted.cs" />
+    <Compile Include="Subscribers\ISubscriber.cs" />
+    <Compile Include="Subscribers\OnSelfServiceOrderCreated.cs" />
+    <Compile Include="Subscribers\Subscriber.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Domain\Contexts\Production\Exceptions\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="TODO.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

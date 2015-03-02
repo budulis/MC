@@ -1,0 +1,3 @@
+﻿#Architectural perversions
+
+TODO:
