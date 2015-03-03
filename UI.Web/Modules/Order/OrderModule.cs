@@ -41,7 +41,7 @@ namespace UI.Web.Modules.Order {
 				Task<Response> response;
 
 				try {
-					await CommandDispatcher.GetQueued(LoggerFactory.Default).Dispatch(command);
+					await CommandDispatchers.GetQueued(LoggerFactory.Default).Dispatch(command);
 
 					response = Task.FromResult(new Response {
 						StatusCode = HttpStatusCode.Accepted,

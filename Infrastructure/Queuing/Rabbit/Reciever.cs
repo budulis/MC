@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Core;
+using Core.Application.Messages;
 using Core.Domain;
 using Core.Domain.Contexts.Ordering.Exceptions;
 using Core.Handlers.Exceptions;
@@ -9,33 +10,47 @@ using Infrastructure.Serialization;
 using RabbitMQ.Client;
 
 namespace Infrastructure.Queuing.Rabbit {
-	internal class Reciever : IReciever<IDomainCommand>, IReciever<IDomainEventNotificationMessage> {
+	internal class Reciever :
+		IReciever<IDomainCommand>,
+		IReciever<IDomainEventNotificationMessage>,
+		IReciever<IApplicationEventNotificationMessage> {
+
 		private Func<byte[], IDomainCommand> _commandDeserializer;
-		private readonly ILogger _logger;
 		private Func<byte[], IDomainEventNotificationMessage> _eventDeserializer;
+		private Func<byte[], IApplicationEventNotificationMessage> _appEventDeserializer;
 		private readonly IConnection _connection;
+		private readonly ILogger _logger;
 
 		public Reciever(Func<byte[], IDomainCommand> deserializer, ILogger logger)
-			: this() {
+			: this(logger) {
 
 			if (deserializer == null)
 				throw new ArgumentNullException("deserializer");
 
 			_commandDeserializer = deserializer;
-			_logger = logger;
 		}
 
 		public Reciever(Func<byte[], IDomainEventNotificationMessage> deserializer, ILogger logger)
-			: this() {
+			: this(logger) {
 
 			if (deserializer == null)
 				throw new ArgumentNullException("deserializer");
 
 			_eventDeserializer = deserializer;
-			_logger = logger;
 		}
 
-		private Reciever() {
+		public Reciever(Func<byte[], IApplicationEventNotificationMessage> deserializer, ILogger logger)
+			: this(logger) {
+
+			if (deserializer == null)
+				throw new ArgumentNullException("deserializer");
+
+			_appEventDeserializer = deserializer;
+		}
+
+		private Reciever(ILogger logger)
+		{
+			_logger = logger;
 			var connectionFactory = new ConnectionFactory { HostName = "localhost" };
 			_connection = connectionFactory.CreateConnection();
 		}
@@ -96,8 +111,35 @@ namespace Infrastructure.Queuing.Rabbit {
 				}
 			}
 		}
+		
+		public void Recieve(Action<Task<IApplicationEventNotificationMessage>> onMessageRecieved, CancellationToken cancellationToken) {
+			using (var channel = RabbitModelFactory.GetModel(_connection, Params.Queueing.QueueName.ForApplicationEvent)) {
+
+				var consumer = new QueueingBasicConsumer(channel);
+				channel.BasicConsume(Params.Queueing.QueueName.ForDomainEvent, false, consumer);
+
+				_logger.Audit("Start recieving");
+
+				while (!cancellationToken.IsCancellationRequested) {
+					var message = consumer.Queue.Dequeue();
+					var body = message.Body;
+					var evt = _appEventDeserializer(body);
+
+					try {
+						onMessageRecieved(Task.FromResult(evt));
+						channel.BasicAck(message.DeliveryTag, false);
+						_logger.Audit(evt);
+					}
+					catch (Exception ex) {
+						//TODO: Send message to dead-letter queue
+						_logger.Error(ex);
+					}
+				}
+			}
+		}
 
 		#region IDisposable
+
 		~Reciever() {
 			Dispose(false);
 		}
@@ -114,7 +156,7 @@ namespace Infrastructure.Queuing.Rabbit {
 				if (_connection != null)
 					_connection.Dispose();
 			}
-		} 
+		}
 		#endregion
 	}
 }

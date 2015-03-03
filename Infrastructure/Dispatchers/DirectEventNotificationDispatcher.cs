@@ -1,23 +1,19 @@
-using System;
-using System.Threading.Tasks;
 using Core;
 using Core.Domain;
-using System.Collections.Generic;
-using System.Linq;
-using Core.Domain.Contexts.Ordering.Exceptions;
 using Core.Domain.Contexts.Ordering.Messages;
 using Core.Domain.Contexts.Production.Messages;
 using Core.ReadModel;
 using Core.Subscribers;
 using Infrastructure.ReadModel;
-using Infrastructure.Services.Reporting;
 using Microsoft.CSharp.RuntimeBinder;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Infrastructure.Dispatchers {
 	internal class DirectEventNotificationDispatcher : IDomainEventDispather {
 		private readonly ILogger _logger;
 		private readonly IReadModelRepository<OrderReadModel> _orderReadModelRepository;
-		private readonly IReadModelRepository<ReceiptReadModel> _receiptReadModelRepository;
 		private readonly Func<IDomainCommandDispatcher> _domainCommandDispatcher;
 
 		public DirectEventNotificationDispatcher(ILogger logger, 
@@ -25,7 +21,6 @@ namespace Infrastructure.Dispatchers {
 			Func<IDomainCommandDispatcher> domainCommandDispatcher) {
 			_logger = logger;
 			_orderReadModelRepository = factory.Get<OrderReadModel>();
-			_receiptReadModelRepository = factory.Get<ReceiptReadModel>();
 			_domainCommandDispatcher = domainCommandDispatcher;
 			}
 
@@ -57,7 +52,7 @@ namespace Infrastructure.Dispatchers {
 		}
 
 		private Task DispatchNotification(OrderStartedNotificationMessage m) {
-			var dispather = EventDispather.Application.GetDirect(_logger);
+			var dispather = EventDispathers.Application.GetDirect(_logger);
 			return new OnOrderStarted(_domainCommandDispatcher(), _orderReadModelRepository, dispather).Notify(m);
 		}
 

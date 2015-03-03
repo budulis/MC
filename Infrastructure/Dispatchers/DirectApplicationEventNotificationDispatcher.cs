@@ -1,13 +1,10 @@
-using System;
-using System.Threading.Tasks;
 using Core;
 using Core.Application.Messages;
-using Core.Domain.Contexts.Ordering.Messages;
 using Core.ReadModel;
-using Core.Subscribers;
-using Infrastructure.ReadModel;
 using Infrastructure.Services.Reporting;
 using Microsoft.CSharp.RuntimeBinder;
+using System;
+using System.Threading.Tasks;
 
 namespace Infrastructure.Dispatchers
 {

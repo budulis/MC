@@ -7,10 +7,7 @@ using Core;
 using Core.Domain;
 
 namespace Infrastructure.EventStore {
-	public abstract class EventStore :IEventStore {
-		public abstract Task AddAsync(Type aggregateType, Id aggregateId, IDomainEvent[] events, int eventsLoaded);
-		public abstract Task<IEnumerable<TDomainEvent>> GetAsync<TDomainEvent>(Type aggregateType, Id aggregateId) where TDomainEvent : IDomainEvent;
-
+	public class EventStores {
 		public static IEventStore Redis {
 			get { return RedisEventStore.Instance; }
 		}

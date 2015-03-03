@@ -1,34 +1,29 @@
-using System.Threading.Tasks;
 using Core;
-using Core.Domain;
 using Infrastructure.Services.Discount;
-using Infrastructure.Services.Logging;
 using Infrastructure.Services.Payment;
 using Infrastructure.Services.Staff;
 
-namespace Infrastructure.Dispatchers {
-	public abstract class CommandDispatcher : IDomainCommandDispatcher {
-		
-		public abstract Task Dispatch(IDomainCommand command);
-
+namespace Infrastructure.Dispatchers
+{
+	public class CommandDispatchers
+	{
 		private static readonly object SyncRoot;
+		private static IDomainCommandDispatcher _queued;
 
-		static CommandDispatcher() {
+		static CommandDispatchers() {
 			SyncRoot = new object();
 		}
 
-		private static IDomainCommandDispatcher _queued;
+		public static IDomainCommandDispatcher GetDirect(IDomainEventDispather domainEventDispather, ILogger logger) {
 
-		public static IDomainCommandDispatcher GetDirect(IDomainEventDispather domainEventDispather,ILogger logger) {
-
-			IEventStore eventStore = EventStore.EventStore.InMemory;
+			IEventStore eventStore = EventStore.EventStores.InMemory;
 			IDiscountService discountService = new DiscountService();
 			ICardPaymentService paymentService = new CardPaymentService();
 			ICashierRepository cashiers = new CashierRepository();
 			IChefRepository chefs = new ChefRepository();
 			IInfrastructureService infrastructureService = new InfrastructureService(eventStore, discountService, paymentService, logger, cashiers, chefs);
 
-			return new DirectCommandDispatcher(infrastructureService,domainEventDispather);
+			return new DirectCommandDispatcher(infrastructureService, domainEventDispather);
 		}
 
 		public static IDomainCommandDispatcher GetDirect(IInfrastructureService services, IDomainEventDispather eventDispather) {

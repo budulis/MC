@@ -15,7 +15,7 @@ namespace Infrastructure.Tests.Serialization {
 
 		[TestInitialize]
 		public void Initialize() {
-			Bootstrapper.Default.RunInitializationTasks();
+			//Bootstrapper.Default.RunInitializationTasks();
 		}
 
 		[TestMethod]

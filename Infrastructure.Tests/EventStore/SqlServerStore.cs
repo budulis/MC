@@ -12,7 +12,7 @@ namespace Infrastructure.Tests.EventStore
 			var id = Id.New();
 			var e = new OrderCreated(id, new[] { new Product("1", "Test Product", 25.4M) }, null,null,null);
 
-			var store = Infrastructure.EventStore.EventStore.SqlServer;
+			var store = Infrastructure.EventStore.EventStores.SqlServer;
 
 			store.AddAsync(typeof(Order), id, new IDomainEvent[] { e }, 1);
 		}
@@ -21,7 +21,7 @@ namespace Infrastructure.Tests.EventStore
 			var id = Id.New();
 			var e = new OrderCreated(id, new[] { new Product("1", "Test Product", 25.4M) }, null,null,null);
 
-			var store = Infrastructure.EventStore.EventStore.SqlServer;
+			var store = Infrastructure.EventStore.EventStores.SqlServer;
 
 			store.AddAsync(typeof(Order), id, new IDomainEvent[] { e }, 1).ConfigureAwait(false);
 

@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Core.Application.Messages;
-using Core.Domain.Contexts.Ordering.Messages;
 using Core.ReadModel;
 using Core.Subscribers;
 

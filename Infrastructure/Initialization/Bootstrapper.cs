@@ -7,6 +7,7 @@ using Core.Domain;
 using ProtoBuf.Meta;
 
 namespace Infrastructure.Initialization {
+	[Obsolete("Bullshit...")]
 	public class Bootstrapper : IDisposable {
 		private List<Delegate> _tasks;
 

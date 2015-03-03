@@ -17,12 +17,13 @@ namespace Infrastructure.EventStore {
 			public string StringData { get; set; }
 		}
 
-		private readonly static object SyncBlock = new object();
+		private static readonly object SyncBlock;
 
 		private static readonly List<StoreEvent> Events;
 
 		static InMemoryStore() {
 			Events = new List<StoreEvent>();
+			SyncBlock = new object();
 		}
 
 		public Task AddAsync(Type aggregateType, Id aggregateId, IDomainEvent[] events, int eventsLoaded) {

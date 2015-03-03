@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.ComponentModel;
+using System.Threading;
 using Core;
 using Core.Domain;
 using Core.Domain.Contexts.Ordering.Commands;
@@ -21,7 +22,7 @@ namespace TestRunner {
 
 		static void Main()
 		{
-			_domainCommandDispatcher = CommandDispatcher.GetDirect(EventDispather.Domain.GetDirect(() => _domainCommandDispatcher, Logger), Logger);
+			_domainCommandDispatcher = CommandDispatchers.GetDirect(EventDispathers.Domain.GetDirect(() => _domainCommandDispatcher, Logger), Logger);
 			TestDomainModel();
 		}
 

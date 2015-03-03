@@ -1,10 +1,8 @@
 ﻿CORE
 	[-]
 INFRASTRUCTURE
-	[-] Move all factory methods away from abstract classes into theirown. E.g. Logger will be palced in Loggers and have corresponding static factory methods. 
-	[-] Remove all ILoggers passed as ctor argument. Instead use factories inside. 
-	[+] Create application event dispatcher
 	[-] Implement in memory queue(buffer) to store messages while e.g. Rabbit is not accessible.
 	[-] Create common domain/application error queue to signal all intresting parties if app is down.
 		(e.g. if payment service is not accesible then signal UI that payment using credit cards ar not accepted for now)
 	[-] Fix the bootstraper to work as needed
+	[-] Implement in memory queue(buffer) to store messages while e.g. Rabbit is not accessible.

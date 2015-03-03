@@ -10,7 +10,7 @@ namespace Infrastructure.Dispatchers
 		private readonly ISender<IDomainCommand> _sender;
 
 		public QueuedCommandDispatcher(ILogger logger) {
-			_sender = Sender.ForRabbitCommand(logger);
+			_sender = Senders.ForRabbitCommand(logger);
 		}
 
 		public async Task Dispatch(IDomainCommand command) {

@@ -13,17 +13,22 @@ namespace Host {
 
 		static void Main(string[] args) {
 
-			Bootstrapper.Default.RunInitializationTasks();
 			var logger = LoggerFactory.Default;
 
-			var commandDispatcher = CommandDispatcher.GetDirect(EventDispather.Domain.GetQueued(logger),logger);
-			var eventDispatcher = EventDispather.Domain.GetDirect(() => commandDispatcher, logger);
+			var commandDispatcher = CommandDispatchers.GetDirect(EventDispathers.Domain.GetQueued(logger),logger);
+			var eventDispatcher = EventDispathers.Domain.GetDirect(() => commandDispatcher, logger);
+			var appEventDispatcher = EventDispathers.Application.GetDirect(logger);
 
 			var cts = new CancellationTokenSource();
 
-			Task.Run(() => Reciever.ForRabbitCommand(logger).Recieve(async s => await commandDispatcher.Dispatch(await s), cts.Token), cts.Token);
+			Task.Run(() => Receivers.ForRabbitCommand(logger)
+				.Recieve(async s => await commandDispatcher.Dispatch(await s), cts.Token), cts.Token);
 
-			Task.Run(() => Reciever.ForRabbitEventNotification(logger).Recieve(async s => await eventDispatcher.Dispatch(await s), cts.Token), cts.Token);
+			Task.Run(() => Receivers.ForRabbitEventNotification(logger)
+				.Recieve(async s => await eventDispatcher.Dispatch(await s), cts.Token), cts.Token);
+
+			Task.Run(() => Receivers.ForRabbitApplicationEventNotification(logger)
+				.Recieve(async s => await appEventDispatcher.Dispatch(await s), cts.Token), cts.Token);
 
 			ConsoleKeyInfo keyInfo;
 
