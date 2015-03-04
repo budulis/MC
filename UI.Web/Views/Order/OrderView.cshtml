@@ -8,7 +8,7 @@
 	<link href="/Content/Css/toastr.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
-	
+
 	<div class="container">
 
 		@foreach (var m in Model.AvailableProducts) {
@@ -23,24 +23,38 @@
 		<div class="form-group">
 			<label>Name</label>
 			<div class="col-sm-offset-2 col-sm-10">
-				<input id="name" type="text" />
+				<input id="name" type="text" value="John Doe" />
 			</div>
 		</div>
 
 		<div class="form-group">
 			<label>Additional information</label>
 			<div class="col-sm-offset-2 col-sm-10">
-				<textarea id="comments" style="width: 391px; height: 82px;"></textarea>
+				<textarea id="comments" style="width: 391px; height: 82px;">No onions please :)</textarea>
 			</div>
 		</div>
 
+		<div class="form-group">
+			<label>Card number</label>
+			<div class="col-sm-offset-2 col-sm-10">
+				<input id="cardNumber" type="text" value="4532638892686748" />
+			</div>
+		</div>
+		<br />
+		<div class="form-group">
+			<label>Loyalty card number</label>
+			<div class="col-sm-offset-2 col-sm-10">
+				<input id="loyaltyCardNumber" type="text" value="111-222-333" />
+			</div>
+		</div>
+		<br/>
 		<div class="form-group">
 			<div class="col-sm-offset-2 col-sm-10">
 				<button type="submit" class="btn btn-default" id="submitOrder">Submit</button>
 			</div>
 		</div>
-	</div>
 
+	</div>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 	<script src="/Content/JS/toastr.js"></script>
 	<script src="/Content/JS/jquery-1.6.4.min.js"></script>
@@ -51,10 +65,14 @@
 		var data = [];
 		var name;
 		var comments;
+		var cardNumber;
+		var loyaltyCardNumber;
 		$(function () {
 			$('#submitOrder').click(function () {
 				name = $("#name").val();
 				comments = $("#comments").val();
+				cardNumber = $("#cardNumber").val();
+				loyaltyCardNumber = $("#loyaltyCardNumber").val();
 				data = [];
 				$(":checked").each(function () {
 					data.push($(this).val());
@@ -62,7 +80,7 @@
 				$.ajax({
 					url: "/Order",
 					type: "POST",
-					data: "{\"customerName\":\"" + name + "\",\"comments\":\"" + comments + "\",\"productIDs\":" + JSON.stringify(data) + "}",
+					data: "{\"customerName\":\"" + name + "\",\"comments\":\"" + comments + "\",\"cardNumber\":\"" + cardNumber + "\",\"loyaltyCardNumber\":\"" + loyaltyCardNumber + "\",\"productIDs\":" + JSON.stringify(data) + "}",
 					contentType: 'application/json; charset=utf-8',
 				}).done(function (data, statusText, xhr) {
 					if (xhr.status == 202) {

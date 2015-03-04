@@ -1,6 +1,8 @@
-﻿using Core.ReadModel;
+﻿using Core;
+using Core.ReadModel;
 using Infrastructure.DataBase;
 using Infrastructure.ReadModel;
+using Infrastructure.Services.Logging;
 using Infrastructure.Services.Product;
 using Nancy;
 using Nancy.TinyIoc;
@@ -10,9 +12,10 @@ namespace UI.Web {
 		protected override void ConfigureApplicationContainer(TinyIoCContainer container)
 		{
 			base.ConfigureApplicationContainer(container);
-			container.Register<IItemInfoRepository<ProductInfo>, ProductInfoRepository>().AsMultiInstance();
+			container.Register(LoggerFactory.Default);
 			container.Register<DataBaseContext>().AsMultiInstance();
 			container.Register<IReadModelRepository<OrderReadModel>, OrderReadModelRepository>().AsMultiInstance();
+			container.Register<IItemInfoRepository<ProductInfo>, ProductInfoRepository>().AsMultiInstance();
 		}
 	}
 }

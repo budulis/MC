@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading;
 using System.Threading.Tasks;
+using Core;
 using Core.Domain;
 using Core.Domain.Contexts.Ordering.Commands;
 using Infrastructure.Dispatchers;
@@ -19,45 +21,48 @@ namespace UI.Web.Modules.Order {
 
 	public class OrderModule : NancyModule {
 		private readonly IItemInfoRepository<ProductInfo> _inventoryItemRepository;
-
+		private IDomainCommandDispatcher _commandDispatcher;
 		public OrderModule(IItemInfoRepository<ProductInfo> inventoryItemRepository) {
 			_inventoryItemRepository = inventoryItemRepository;
 
-			Get["/Order"] = p => View[GetOrderViewModel()];
-			Post["/Order", true] =  async (p,ct) => {
+			Get["/Order", true] = async (p, ct) => View[await GetOrderViewModel()];
+			Post["/Order", true] = async (p, ct) => await PostOrderViewModel(p, ct);
+		}
 
-				var viewModel = this.Bind<PostedOrder>();
-				var products = new List<Product>();
+		private async Task<Response> PostOrderViewModel(dynamic p, CancellationToken ct) {
+			var viewModel = this.Bind<PostedOrder>();
 
-				foreach (var id in viewModel.ProductIDs) {
-					var item = await _inventoryItemRepository.GetByIdAsync(id);
-					var prd = new Product(id, item.Name, item.Price);
-					products.Add(prd);
-				}
+			var products = new List<Product>();
 
-				var orderId = Id.New();
-				var command = new CreateSelfServiceOrder(orderId, products.ToArray(), viewModel.CustomerName, viewModel.Comments);
+			foreach (var id in viewModel.ProductIDs) {
+				var item = await _inventoryItemRepository.GetByIdAsync(id);
+				var prd = new Product(id, item.Name, item.Price);
+				products.Add(prd);
+			}
 
-				Task<Response> response;
+			var orderId = Id.New();
+			var command = new CreateSelfServiceOrder(orderId, products.ToArray(), viewModel.CustomerName, viewModel.Comments, viewModel.CardNumber,viewModel.LoyaltyCardNumber);
 
-				try {
-					await CommandDispatchers.GetQueued(LoggerFactory.Default).Dispatch(command);
+			Task<Response> response;
 
-					response = Task.FromResult(new Response {
-						StatusCode = HttpStatusCode.Accepted,
-						Headers = new Dictionary<string, string> { { "location", orderId.ToString() } }
-					});
-				}
-				catch (Exception ex) {
-					Console.WriteLine(ex);
-					response = Task.FromResult(new Response {
-						StatusCode = HttpStatusCode.InternalServerError,
-						Headers = new Dictionary<string, string> { { "location", orderId.ToString() } }
-					});
-				}
+			try {
+				_commandDispatcher = CommandDispatchers.GetDirect(EventDispathers.Domain.GetDirect(() => _commandDispatcher, LoggerFactory.Default), LoggerFactory.Default);
+				await _commandDispatcher.Dispatch(command);
 
-				return response;
-			};
+				response = Task.FromResult(new Response {
+					StatusCode = HttpStatusCode.Accepted,
+					Headers = new Dictionary<string, string> { { "location", orderId.ToString() } }
+				});
+			}
+			catch (Exception ex) {
+				Console.WriteLine(ex);
+				response = Task.FromResult(new Response {
+					StatusCode = HttpStatusCode.InternalServerError,
+					Headers = new Dictionary<string, string> { { "location", orderId.ToString() } }
+				});
+			}
+
+			return await response;
 		}
 
 		private async Task<OrderViewModel> GetOrderViewModel() {

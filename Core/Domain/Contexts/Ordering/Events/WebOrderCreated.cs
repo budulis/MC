@@ -3,15 +3,16 @@ using Core.Domain.Contexts.Ordering.Messages;
 
 namespace Core.Domain.Contexts.Ordering.Events
 {
-	public class WebOrderCreated : IDomainEvent
+	public class SelfServiceOrderCreated : IDomainEvent
 	{
 		public Id Id { get; private set; }
 		public IEnumerable<Product> Products { get; private set; }
 		public string CustomerName { get; private set; }
 		public string Comments { get; private set; }
-		
-		public WebOrderCreated(Id id, IEnumerable<Product> products, string customerName, string comments)
+		public string CardNumber { get; private set; }
+		public SelfServiceOrderCreated(Id id, IEnumerable<Product> products, string customerName, string comments, string cardNumber)
 		{
+			CardNumber = cardNumber;
 			Comments = comments;
 			CustomerName = customerName;
 			Products = products;
@@ -25,7 +26,8 @@ namespace Core.Domain.Contexts.Ordering.Events
 				Id = Id,
 				Products = Products,
 				CustomerName = CustomerName,
-				Comments = Comments
+				Comments = Comments,
+				CardNumber = CardNumber
 			};
 		}
 	}

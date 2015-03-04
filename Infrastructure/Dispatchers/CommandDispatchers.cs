@@ -1,4 +1,5 @@
 using Core;
+using Infrastructure.EventStore;
 using Infrastructure.Services.Discount;
 using Infrastructure.Services.Payment;
 using Infrastructure.Services.Staff;
@@ -16,7 +17,7 @@ namespace Infrastructure.Dispatchers
 
 		public static IDomainCommandDispatcher GetDirect(IDomainEventDispather domainEventDispather, ILogger logger) {
 
-			IEventStore eventStore = EventStore.EventStores.InMemory;
+			IEventStore eventStore = EventStores.SqlServer;
 			IDiscountService discountService = new DiscountService();
 			ICardPaymentService paymentService = new CardPaymentService();
 			ICashierRepository cashiers = new CashierRepository();

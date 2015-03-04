@@ -40,7 +40,7 @@ namespace TestRunner {
 
 		private static void Produce(ITargetBlock<Id> target) {
 			//var rnd = new Random();
-			IItemInfoRepository<ProductInfo> products = new CachedProductInfoRepository(new ProductInfoRepository(() => new DataBaseContext(LoggerFactory.Get<NullLogger>())));
+			IItemInfoRepository<ProductInfo> products = new CachedProductInfoRepository(new ProductInfoRepository(new DataBaseContext(LoggerFactory.Get<NullLogger>())));
 			Parallel.ForEach(Enumerable.Range(0, 1000), new ParallelOptions { MaxDegreeOfParallelism = 8 }, async x => {
 				var id = new Id(Guid.NewGuid());
 				var prods = (await products.GetAllAsync()).Select(p => new Product(p.Id, p.Name, p.Price));

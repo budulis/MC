@@ -10,5 +10,6 @@ namespace Core.Domain.Contexts.Ordering.Messages
 		public IEnumerable<Product> Products { get; set; }
 		public string CustomerName { get; set; }
 		public string Comments { get; set; }
+		public string CardNumber { get; set; }
 	}
 }

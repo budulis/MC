@@ -14,7 +14,9 @@ namespace Core.Handlers {
 		}
 
 		public override async Task Handle(CreateSelfServiceOrder command) {
-			var order = new SelfServiceOrder(command.Id, command.Products, command.CustomerName, command.Comments) { Logger = Logger };
+			var order = new SelfServiceOrder(command.Id, command.Products, command.CustomerName, command.Comments,command.CardNumber) {
+				Logger = Logger
+			};
 			await Store.AddAsync(order.GetType(), order.Id, order.Events.ToArray(), order.CurrentSequenceNumber);
 
 			await DomainEventDispather.Dispatch(order.Events.Select(x => x.ToMessage()));

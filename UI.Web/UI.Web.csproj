@@ -98,6 +98,7 @@
     <Compile Include="Models\OrderDataViewModel.cs" />
     <Compile Include="Models\OrderSummaryViewModel.cs" />
     <Compile Include="Models\OrderViewModel.cs" />
+    <Compile Include="Models\PostedOrder.cs" />
     <Compile Include="Models\ProductViewModel.cs" />
     <Compile Include="Modules\Order\OrderModule.cs" />
     <Compile Include="Modules\Order\OrderSummaryModule.cs" />
