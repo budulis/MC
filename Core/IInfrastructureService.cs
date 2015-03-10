@@ -13,5 +13,6 @@ namespace Core {
 		ILogger Logger { get; }
 		ICashierRepository Cashiers { get; }
 		IChefRepository Chefs { get; }
+		ISelfServicePaymentService SelfServicePaymentService { get; }
 	}
 }

@@ -19,7 +19,7 @@ namespace Core.Handlers
 			order.Complete();
 			await Store.AddAsync(order.GetType(), order.Id, order.Events.ToArray(), order.CurrentSequenceNumber);
 
-			DomainEventDispather.Dispatch(order.Events.Select(x => x.ToMessage()));
+			await DomainEventDispather.Dispatch(order.Events.Select(x => x.ToMessage()));
 		}
 	}
 }

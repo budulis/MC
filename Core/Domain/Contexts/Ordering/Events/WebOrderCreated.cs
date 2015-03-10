@@ -10,8 +10,11 @@ namespace Core.Domain.Contexts.Ordering.Events
 		public string CustomerName { get; private set; }
 		public string Comments { get; private set; }
 		public string CardNumber { get; private set; }
-		public SelfServiceOrderCreated(Id id, IEnumerable<Product> products, string customerName, string comments, string cardNumber)
+		public string LoyaltyCardNumber { get; private set; }
+
+		public SelfServiceOrderCreated(Id id, IEnumerable<Product> products, string customerName, string comments, string cardNumber, string loyaltyCardNumber)
 		{
+			LoyaltyCardNumber = loyaltyCardNumber;
 			CardNumber = cardNumber;
 			Comments = comments;
 			CustomerName = customerName;

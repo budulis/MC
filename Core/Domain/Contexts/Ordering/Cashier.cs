@@ -69,7 +69,7 @@ namespace Core.Domain.Contexts.Ordering {
 			if (PaymentService == null)
 				throw new PaymentServiceException("Payment service unavailable");
 
-			PaymentService.ProcessCardPayment(amountToPay, payment.CardType, payment.CardNumber);
+			PaymentService.ProcessPayment(amountToPay, payment.CardNumber);
 		}
 
 		private static void Validate(decimal amountToPay, CashPayment payment)

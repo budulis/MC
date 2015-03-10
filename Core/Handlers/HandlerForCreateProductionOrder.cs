@@ -7,7 +7,7 @@ using Core.Domain.Contexts.Production.Commands;
 namespace Core.Handlers
 {
 	public sealed class HandlerForCreateProductionOrder : Handler<CreateProductionOrder> {
-		private IInfrastructureService _infrastructureService;
+		private readonly IInfrastructureService _infrastructureService;
 
 		public HandlerForCreateProductionOrder(IInfrastructureService infrastructureService, IDomainEventDispather domainEventDispather)
 			: base(infrastructureService.EventStore, infrastructureService.DiscountService, infrastructureService.CardPaymentService, infrastructureService.Logger, domainEventDispather)
@@ -19,10 +19,9 @@ namespace Core.Handlers
 			var chef = _infrastructureService.Chefs.GetByName("Olivia");
 			chef.Logger = Logger;
 
-			var order = new ProductionOrder(command.Id, command.Products, chef);
-			await Store.AddAsync(order.GetType(), order.Id, order.Events.Cast<IDomainEvent>().ToArray(), order.CurrentSequenceNumber);
-
-			DomainEventDispather.Dispatch(order.Events.Select(x => x.ToMessage()));
+			var order = new ProductionOrder(command.Id, command.Products, chef,command.OrderType);
+			await Store.AddAsync(order.GetType(), order.Id, order.Events.ToArray(), order.CurrentSequenceNumber);
+			await DomainEventDispather.Dispatch(order.Events.Select(x => x.ToMessage()));
 		}
 	}
 }

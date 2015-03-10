@@ -12,7 +12,7 @@ namespace Core.Subscribers
 			}
 
 		public override async Task Notify(ProductionOrderCompletedNotificationMessage evt) {
-			await DomainCommandDispatcher.Dispatch(new CompleteOrder(evt.Id));
+			await DomainCommandDispatcher.Dispatch(new CompleteOrder(evt.Id,evt.OrderType));
 			await Task.FromResult(true);
 		}
 	}

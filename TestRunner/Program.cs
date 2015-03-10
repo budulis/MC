@@ -1,5 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.ComponentModel;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using Core;
 using Core.Domain;
@@ -16,14 +18,33 @@ using System.Threading.Tasks.Dataflow;
 
 namespace TestRunner {
 
+	abstract class Base {
+		
+		private Base() {
+			Console.WriteLine("B.ctor");
+		}
+
+		public class Derived : Base
+		{
+			public Derived()
+			{
+				Console.WriteLine("D.ctor");
+			}
+		}
+	}
+
+
 	class Program {
 		private static IDomainCommandDispatcher _domainCommandDispatcher;
 		private static readonly ILogger Logger = LoggerFactory.Default;
 
-		static void Main()
-		{
-			_domainCommandDispatcher = CommandDispatchers.GetDirect(EventDispathers.Domain.GetDirect(() => _domainCommandDispatcher, Logger), Logger);
-			TestDomainModel();
+		static void Main() {
+			
+			Base b= new Base.Derived();
+
+
+			//_domainCommandDispatcher = CommandDispatchers.GetDirect(EventDispathers.Domain.GetDirect(() => _domainCommandDispatcher, Logger), Logger);
+			//TestDomainModel();
 		}
 
 		private static void TestDomainModel() {

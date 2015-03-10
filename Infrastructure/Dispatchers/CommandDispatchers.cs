@@ -1,13 +1,12 @@
 using Core;
 using Infrastructure.EventStore;
+using Infrastructure.Services;
 using Infrastructure.Services.Discount;
 using Infrastructure.Services.Payment;
 using Infrastructure.Services.Staff;
 
-namespace Infrastructure.Dispatchers
-{
-	public class CommandDispatchers
-	{
+namespace Infrastructure.Dispatchers {
+	public class CommandDispatchers {
 		private static readonly object SyncRoot;
 		private static IDomainCommandDispatcher _queued;
 
@@ -22,7 +21,9 @@ namespace Infrastructure.Dispatchers
 			ICardPaymentService paymentService = new CardPaymentService();
 			ICashierRepository cashiers = new CashierRepository();
 			IChefRepository chefs = new ChefRepository();
-			IInfrastructureService infrastructureService = new InfrastructureService(eventStore, discountService, paymentService, logger, cashiers, chefs);
+			ILoyaltyProgrammService loyalstyService = new LoyaltyProgrammService();
+			ISelfServicePaymentService selfServicepaymentService = new SelfServicePaymentService(discountService, paymentService, loyalstyService);
+			IInfrastructureService infrastructureService = new InfrastructureService(eventStore, discountService, paymentService, logger, cashiers, chefs, selfServicepaymentService);
 
 			return new DirectCommandDispatcher(infrastructureService, domainEventDispather);
 		}

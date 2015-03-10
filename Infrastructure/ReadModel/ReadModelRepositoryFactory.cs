@@ -10,11 +10,11 @@ namespace Infrastructure.ReadModel
 		public IReadModelRepository<TReadModel> Get<TReadModel>() where TReadModel : IReadModel
 		{
 			if (typeof (TReadModel) == typeof (OrderReadModel))
-				//return (IReadModelRepository<TReadModel>)new OrderReadModelRepository(() => new DataBaseContext(new NullLogger()));
-				return (IReadModelRepository<TReadModel>)new InMemoryReadModelRepository();
+				return (IReadModelRepository<TReadModel>)new OrderReadModelRepository(() => new DataBaseContext(new NullLogger()));
+				//return (IReadModelRepository<TReadModel>) new InMemoryReadModelRepository();
 
 			if (typeof(TReadModel) == typeof(ReceiptReadModel))
-				return (IReadModelRepository<TReadModel>)new ReceiptReadModelRepository(() => new DataBaseContext(new NullLogger()));
+				return (IReadModelRepository<TReadModel>) new ReceiptReadModelRepository(() => new DataBaseContext(new NullLogger()));
 
 			throw new NotSupportedException();
 		} 

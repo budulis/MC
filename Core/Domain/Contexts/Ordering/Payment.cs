@@ -31,17 +31,17 @@ namespace Core.Domain.Contexts.Ordering {
 	}
 
 	public class CardPayment : Payment, IEquatable<CardPayment> {
-		public CardType CardType { get; private set; }
+		//public CardType CardType { get; private set; }
 		public string CardNumber { get; private set; }
 
-		public CardPayment(CardType cardType, LoyaltyCardType loyaltyCard, string cardNumber)
+		public CardPayment(LoyaltyCardType loyaltyCard, string cardNumber)
 			: base(loyaltyCard) {
 			CardNumber = cardNumber;
-			CardType = cardType;
+			//CardType = cardType;
 		}
 
 		public bool Equals(CardPayment other) {
-			return LoyaltyCard == other.LoyaltyCard && CardType == other.CardType;
+			return CardNumber.Equals(other.CardNumber, StringComparison.OrdinalIgnoreCase);
 		}
 
 		public override string ToString() {

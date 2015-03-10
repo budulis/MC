@@ -48,7 +48,7 @@ namespace Infrastructure.Dispatchers {
 		}
 
 		private Task DispatchNotification(SelfServiceOrderCreatedNotificationMessage m) {
-			return new OnSelfServiceOrderCreated(_orderReadModelRepository).Notify(m);
+			return new OnSelfServiceOrderCreated(_domainCommandDispatcher(),_orderReadModelRepository).Notify(m);
 		}
 
 		private Task DispatchNotification(OrderStartedNotificationMessage m) {

@@ -12,7 +12,7 @@ namespace Core.Domain.Contexts.Ordering.Commands
 		public string CardNumber { get; private set; }
 		public string LoyaltyCardNumber { get; set; }
 
-		public CreateSelfServiceOrder(Id id, Product[] products, string customerName, string comments, string cardNumber, string loyaltyCardNumber) {
+		public CreateSelfServiceOrder(Id id, IEnumerable<Product> products, string customerName, string comments, string cardNumber, string loyaltyCardNumber) {
 			CardNumber = cardNumber;
 			LoyaltyCardNumber = loyaltyCardNumber;
 			Comments = comments;

@@ -28,7 +28,6 @@ namespace Core.Handlers {
 
 		public override async Task Handle(PayForOrder command) {
 			await _policy.Execute(() => HandleCommand(command));
-			//await HandleCommand(command);
 		}
 
 		private async Task HandleCommand(PayForOrder command) {
@@ -42,7 +41,7 @@ namespace Core.Handlers {
 
 				if (command.PaymentType == PaymentType.Card)
 				{
-					var payment = new CardPayment(command.CardType, command.LoyaltyCard, command.CardNumber);
+					var payment = new CardPayment(command.LoyaltyCard, command.CardNumber);
 					order.AsignPayment(payment);
 				}
 				else
