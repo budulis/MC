@@ -24,9 +24,16 @@ namespace Core.Domain.Contexts.Ordering {
 
 		private void CreateNewOrder(ISelfServicePaymentService paymentService, OrderInfo orderInfo, PaymentInfo paymentInfo) {
 
-			IDomainEvent evt = new SelfServiceOrderCreated(orderInfo.Id, orderInfo.Products, orderInfo.Name, orderInfo.Comments, paymentInfo.CardNumber, paymentInfo.LoyaltyCardNumber);
+			var result = paymentService.ProcessPayment(orderInfo.Products, paymentInfo.CardNumber, paymentInfo.LoyaltyCardNumber);
 
-			paymentService.ProcessPayment(this, orderInfo.Products, paymentInfo.CardNumber, paymentInfo.LoyaltyCardNumber);
+			IDomainEvent evt = new SelfServiceOrderCreated(orderInfo.Id,
+				orderInfo.Products,
+				orderInfo.Name,
+				orderInfo.Comments,
+				paymentInfo.CardNumber,
+				paymentInfo.LoyaltyCardNumber,
+				result.Discount,
+				result.AmountCharged);
 
 			UpdateFromEvent(evt);
 			ApplyEvent(evt);
@@ -44,15 +51,17 @@ namespace Core.Domain.Contexts.Ordering {
 			Name = evt.CustomerName;
 			Comments = evt.Comments;
 			LoyaltyCardNumber = evt.LoyaltyCardNumber;
+			AmountCharged = evt.AmountCharged;
+			Discount = evt.Discount;
 		}
 
 		public void Complete() {
-			IDomainEvent evt = new OrderCompleted(Id);
+			IDomainEvent evt = new SelfServiceOrderCompleted(Id);
 			UpdateFromEvent(evt);
 			ApplyEvent(evt);
 		}
 
-		private void UpdateFromEvent(OrderCompleted evt) {
+		private void UpdateFromEvent(SelfServiceOrderCompleted evt) {
 			if (!evt.Id.Equals(Id))
 				throw new Exception("Catastrophic failure!");
 

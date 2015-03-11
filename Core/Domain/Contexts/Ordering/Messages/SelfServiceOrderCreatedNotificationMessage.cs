@@ -11,5 +11,8 @@ namespace Core.Domain.Contexts.Ordering.Messages
 		public string CustomerName { get; set; }
 		public string Comments { get; set; }
 		public string CardNumber { get; set; }
+		public string LoyaltyCardNumber { get; set; }
+		public decimal AmountCharged { get; set; }
+		public double Discount { get; set; }
 	}
 }

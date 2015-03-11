@@ -45,6 +45,11 @@ namespace Infrastructure.Dispatchers {
 				.Handle(c);
 		}
 
+		private Task DispatchCommand(CompleteSelfServiceOrder c) {
+			return new HandlerForCompleteSelfServiceOrder(_services.EventStore, _services.DiscountService, _services.CardPaymentService, _services.Logger, _eventDispather)
+				.Handle(c);
+		}
+
 		private Task DispatchCommand(CreateProductionOrder c) {
 			return new HandlerForCreateProductionOrder(_services, _eventDispather)
 				.Handle(c);

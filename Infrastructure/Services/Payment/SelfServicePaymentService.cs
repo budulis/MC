@@ -1,10 +1,10 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Core;
 using Core.Domain;
 using Core.Domain.Contexts.Ordering;
 
-namespace Core {
+namespace Infrastructure.Services.Payment {
 	public class SelfServicePaymentService : ISelfServicePaymentService {
 		public IDiscountService DiscountService { get; private set; }
 		public ICardPaymentService CardPaymentService { get; private set; }
@@ -16,7 +16,7 @@ namespace Core {
 			DiscountService = discountService;
 		}
 
-		public void ProcessPayment(SelfServiceOrder order,IEnumerable<Product> products, string paymentCardNumber,string loyaltyCardNumber) {
+		public SelfServicePaymentResult ProcessPayment(IEnumerable<Core.Domain.Product> products, string paymentCardNumber, string loyaltyCardNumber) {
 			decimal amountToPay;
 			var discount = 0D;
 
@@ -31,8 +31,14 @@ namespace Core {
 				amountToPay = products.Sum(x => x.Price);
 
 			ProcessPayment(amountToPay, paymentCardNumber);
-			order.AmountCharged = amountToPay;
-			order.Discount = discount;
+
+			var result = new SelfServicePaymentResult
+			{
+				AmountCharged = amountToPay,
+				Discount = discount
+			};
+
+			return result;
 		}
 
 		private void ProcessPayment(decimal amountToPay, string paymentCardNumber) {

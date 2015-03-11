@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Core.Domain.Contexts.Ordering.Messages;
 
 namespace Core.Domain.Contexts.Ordering.Events
@@ -11,9 +12,13 @@ namespace Core.Domain.Contexts.Ordering.Events
 		public string Comments { get; private set; }
 		public string CardNumber { get; private set; }
 		public string LoyaltyCardNumber { get; private set; }
+		public decimal AmountCharged { get; private set; }
+		public double Discount { get; private set; }
 
-		public SelfServiceOrderCreated(Id id, IEnumerable<Product> products, string customerName, string comments, string cardNumber, string loyaltyCardNumber)
+		public SelfServiceOrderCreated(Id id, IEnumerable<Product> products, string customerName, string comments, string cardNumber, string loyaltyCardNumber, double discount, decimal amountCharged)
 		{
+			AmountCharged = amountCharged;
+			Discount = discount;
 			LoyaltyCardNumber = loyaltyCardNumber;
 			CardNumber = cardNumber;
 			Comments = comments;
@@ -30,7 +35,11 @@ namespace Core.Domain.Contexts.Ordering.Events
 				Products = Products,
 				CustomerName = CustomerName,
 				Comments = Comments,
-				CardNumber = CardNumber
+				CardNumber = CardNumber,
+				LoyaltyCardNumber = LoyaltyCardNumber,
+				AmountCharged = AmountCharged,
+				Discount = Discount,
+				Date = DateTime.Now
 			};
 		}
 	}

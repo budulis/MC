@@ -115,6 +115,7 @@
     <Compile Include="Services\Logging\LoggerFactory.cs" />
     <Compile Include="Services\Logging\NullLogger.cs" />
     <Compile Include="Services\Payment\PaymentService.cs" />
+    <Compile Include="Services\Payment\SelfServicePaymentService.cs" />
     <Compile Include="Services\Product\CachedProductInfoRepository.cs" />
     <Compile Include="Services\Product\IInventoryItemRepository.cs" />
     <Compile Include="Services\Product\ProductInfoRepository.cs" />

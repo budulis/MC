@@ -38,11 +38,13 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DiscountServiceException.cs" />
     <Compile Include="Domain\Aggregate.cs" />
     <Compile Include="Domain\Contexts\Ordering\Commands\CompleteOrder.cs" />
+    <Compile Include="Domain\Contexts\Ordering\Commands\CompleteSelfServiceOrder.cs" />
     <Compile Include="Domain\Contexts\Ordering\Commands\CreateSelfServiceOrder.cs" />
     <Compile Include="Domain\Contexts\Ordering\Events\SelfServiceOrderCompleted.cs" />
-    <Compile Include="Domain\Contexts\Ordering\Events\WebOrderCreated.cs" />
+    <Compile Include="Domain\Contexts\Ordering\Events\SelfServiceOrderCreated.cs" />
     <Compile Include="Domain\Contexts\Ordering\Messages\OrderCompletedNotificationMessage.cs" />
     <Compile Include="Domain\Contexts\Ordering\Messages\OrderCreatedNotificationMessage.cs" />
     <Compile Include="Application\Messages\OrderStartedApplicationNotificationMessage.cs" />
@@ -66,6 +68,7 @@
     <Compile Include="FclExtensions\SingleThreadedSynchronizationContext.cs" />
     <Compile Include="FclExtensions\ThreadEx.cs" />
     <Compile Include="Handlers\Exceptions\CommandExecutionException.cs" />
+    <Compile Include="Handlers\HandlerForCompleteSelfServiceOrder.cs" />
     <Compile Include="Handlers\HandlerForCreateSelfServiceOrder.cs" />
     <Compile Include="ILoggerAsync.cs" />
     <Compile Include="ILoyaltyProgrammService.cs" />
@@ -73,7 +76,9 @@
     <Compile Include="ISelfServicePaymentService.cs" />
     <Compile Include="ISerializable.cs" />
     <Compile Include="LoyaltyProgrammInfo.cs" />
+    <Compile Include="LoyaltyServiceException.cs" />
     <Compile Include="PaymentInfo.cs" />
+    <Compile Include="PaymentServiceException.cs" />
     <Compile Include="ReadModel\OrderReadModel.cs" />
     <Compile Include="Guard.cs" />
     <Compile Include="Handlers\Handler.cs" />
@@ -118,12 +123,11 @@
     <Compile Include="IApplicationCommand.cs" />
     <Compile Include="IDiscountService.cs" />
     <Compile Include="ICardPaymentService.cs" />
-    <Compile Include="PaymentServiceException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReadModel\IReadModelRepository.cs" />
     <Compile Include="ReadModel\IReadModel.cs" />
     <Compile Include="ReadModel\ReceiptReadModel.cs" />
-    <Compile Include="SelfServicePaymentService.cs" />
+    <Compile Include="SelfServicePaymentResult.cs" />
     <Compile Include="Subscribers\OnOrderCreated.cs" />
     <Compile Include="Subscribers\OnOrderStarted.cs" />
     <Compile Include="Subscribers\OnOrderStartFailed.cs" />
