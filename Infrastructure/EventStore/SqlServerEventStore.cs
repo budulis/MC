@@ -46,7 +46,7 @@ namespace Infrastructure.EventStore
 				let evt = JsonConvert.SerializeObject(e, settings)
 				select JsonConvert.SerializeObject(new StoreEvent {Data = evt, Type = e.GetType().AssemblyQualifiedName});
 
-			await _db.InsertEvents.ExecuteAsync(key, eventData);
+			await _db.InsertEvents.ExecuteAsync(aggregateId.ToString(), key, eventData);
 		}
 
 		public async Task<IEnumerable<TDomainEvent>> GetAsync<TDomainEvent>(Type aggregateType, Id aggregateId) where TDomainEvent : IDomainEvent {

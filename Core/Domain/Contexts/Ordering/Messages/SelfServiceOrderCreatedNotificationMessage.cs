@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Core.Application.Messages;
 
 namespace Core.Domain.Contexts.Ordering.Messages
 {
@@ -14,5 +15,22 @@ namespace Core.Domain.Contexts.Ordering.Messages
 		public string LoyaltyCardNumber { get; set; }
 		public decimal AmountCharged { get; set; }
 		public double Discount { get; set; }
+
+		public IApplicationEventNotificationMessage ToApplicationNotificatioMessage()
+		{
+			return new OrderStartedApplicationNotificationMessage
+			{
+				Id = Id,
+				Amount = AmountCharged,
+				AmountCharged = AmountCharged,
+				Date = Date,
+				Discount = Discount,
+				LoyaltyCard = LoyaltyCardNumber,
+				Payment = PaymentType.Card.ToString(),
+				Products = Products,
+				ReplyTo = ReplyTo,
+				Sender = GetType().ToString()
+			};
+		}
 	}
 }

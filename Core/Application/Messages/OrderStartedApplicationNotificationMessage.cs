@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using Core.Domain;
 
-namespace Core.Application.Messages
-{
-	public class OrderStartedApplicationNotificationMessage : IApplicationEventNotificationMessage
-	{
+namespace Core.Application.Messages {
+	public class OrderStartedApplicationNotificationMessage : IApplicationEventNotificationMessage {
 		public Id Id { get; set; }
 		public string Sender { get; set; }
 		public DateTime Date { get; set; }
@@ -17,8 +15,7 @@ namespace Core.Application.Messages
 		public double Discount { get; set; }
 		public string LoyaltyCard { get; set; }
 
-		public OrderStartedApplicationNotificationMessage()
-		{
+		public OrderStartedApplicationNotificationMessage() {
 			Date = DateTime.UtcNow;
 		}
 	}

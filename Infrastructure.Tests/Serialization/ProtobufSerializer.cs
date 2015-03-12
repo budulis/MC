@@ -10,6 +10,22 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ProtoBuf.Meta;
 
 namespace Infrastructure.Tests.Serialization {
+	
+	[TestClass]
+	public class JsonSerializer
+	{
+		[TestInitialize]
+		public void Initialize() {
+		}
+
+		[TestMethod]
+		public void ShouldDeserialize()
+		{
+
+		}
+
+	}
+
 	[TestClass]
 	public class ProtobufSerializer {
 

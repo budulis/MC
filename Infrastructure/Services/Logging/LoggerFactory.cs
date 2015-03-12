@@ -15,7 +15,7 @@ namespace Infrastructure.Services.Logging
 		}
 
 		public static ILogger Default {
-			get { return Null.Value; }
+			get { return Console.Value; }
 		}
 		public static ILogger Get<TLogger>()
 		{

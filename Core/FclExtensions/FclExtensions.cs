@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Core.FclExtensions {
 	public abstract class SemanticType<T> : IEquatable<SemanticType<T>> where T : IEquatable<T> {
@@ -35,6 +36,14 @@ namespace Core.FclExtensions {
 			unchecked {
 				return EqualityComparer<T>.Default.GetHashCode(Value);
 			}
+		}
+	}
+
+	public static class ByteArrayEx
+	{
+		public static string ToUtf8String(this byte[] bytes)
+		{
+			return Encoding.UTF8.GetString(bytes);
 		}
 	}
 }
