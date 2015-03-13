@@ -1,6 +1,7 @@
 ﻿CORE
 	[-]
 INFRASTRUCTURE
+	[-] Handle all SelfServicePaymentSerivce excpetions issueing apropriate command.
 	[-] Refactor command to be simple and adjust JSON serializer not to save type information
 	[-] Implement in memory queue(buffer) to store messages while e.g. Rabbit is not accessible.
 	[-] Create common domain/application error queue to signal all intresting parties if app is down.

@@ -54,7 +54,7 @@ namespace TestRunner {
 
 		private static async Task Consume(ISourceBlock<Id> source) {
 			while (await source.OutputAvailableAsync()) {
-				var start = new PayForOrder(source.Receive(), 200M, PaymentType.Cash, LoyaltyCardType.Silver, CardType.Credit, "4344-5555-4777-5555");
+				var start = new PayForOrder(source.Receive(), 0M, PaymentType.Cash, LoyaltyCardType.Silver, CardType.Credit, "4344-5555-4777-5555");
 				await _domainCommandDispatcher.Dispatch(start);
 				Logger.Audit(start.Id);
 			}
