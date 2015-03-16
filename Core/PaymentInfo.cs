@@ -6,12 +6,16 @@ using System.Threading.Tasks;
 using Core.Domain;
 
 namespace Core {
-	internal class PaymentInfo {
+	public class PaymentInfo {
 		public string CardNumber { get; set; }
 		public string LoyaltyCardNumber { get; set; }
+
+		public override string ToString() {
+			return String.Format("CardNumber:{0};LoyaltyCardNumber:{1}", CardNumber, LoyaltyCardNumber);
+		}
 	}
 
-	internal class OrderInfo {
+	public class OrderInfo {
 		public Id Id { get; set; }
 		public IEnumerable<Product> Products { get; set; }
 		public string Name { get; set; }

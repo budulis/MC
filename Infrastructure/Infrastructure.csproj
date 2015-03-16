@@ -105,6 +105,7 @@
     <Compile Include="Serialization\IDeserializer.cs" />
     <Compile Include="Serialization\ISerializer.cs" />
     <Compile Include="Serialization\JsonDataSerializer.cs" />
+    <Compile Include="Serialization\JsonDataSerializerNoTypeInfo.cs" />
     <Compile Include="Serialization\ProtoBufSerializer.cs" />
     <Compile Include="Serialization\Serializer.cs" />
     <Compile Include="Serialization\Serializers.cs" />

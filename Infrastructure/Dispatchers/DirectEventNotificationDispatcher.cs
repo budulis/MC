@@ -48,17 +48,21 @@ namespace Infrastructure.Dispatchers {
 		}
 
 		private Task DispatchNotification(SelfServiceOrderCreatedNotificationMessage m) {
-			var dispather = EventDispathers.Application.GetDirect(_logger);
+			var dispather = EventDispathers.Application.GetQueued(_logger);
 			return new OnSelfServiceOrderCreated(_domainCommandDispatcher(), _orderReadModelRepository, dispather).Notify(m);
 		}
 
 		private Task DispatchNotification(OrderStartedNotificationMessage m) {
-			var dispather = EventDispathers.Application.GetDirect(_logger);
+			var dispather = EventDispathers.Application.GetQueued(_logger);
 			return new OnOrderStarted(_domainCommandDispatcher(), _orderReadModelRepository, dispather).Notify(m);
 		}
 
 		private Task DispatchNotification(OrderStartFailedNotificationMessage m) {
 			return new OnOrderStartFailed(_orderReadModelRepository).Notify(m);
+		}
+
+		private Task DispatchNotification(SelfServiceOrderStartFailedNotificationMessage m) {
+			return new OnSelfServiceOrderStartFailed(_orderReadModelRepository).Notify(m);
 		}
 
 		private Task DispatchNotification(OrderCompletedNotificationMessage m) {

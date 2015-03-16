@@ -29,7 +29,6 @@ namespace Core.Domain.Contexts.Ordering.Messages
 				Payment = PaymentType.Card.ToString(),
 				Products = Products,
 				ReplyTo = ReplyTo,
-				Sender = GetType().ToString()
 			};
 		}
 	}

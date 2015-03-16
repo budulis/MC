@@ -11,5 +11,9 @@ namespace Infrastructure.Serialization
 		public static Serializer<TData> Json<TData>() {
 			return new JsonDataSerializer<TData>(); 
 		}
+
+		public static Serializer<TData> JsonNoTypeInfo<TData>() {
+			return new JsonDataSerializerNoTypeInfo<TData>();
+		}
 	}
 }

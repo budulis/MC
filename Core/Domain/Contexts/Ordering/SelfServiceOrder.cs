@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using Core.Domain.Contexts.Ordering.Events;
+using Infrastructure.Services.Payment;
 
 namespace Core.Domain.Contexts.Ordering {
-	public class SelfServiceOrder : Aggregate<SelfServiceOrder, IDomainEvent> {
+	internal class SelfServiceOrder : Aggregate<SelfServiceOrder, IDomainEvent> {
 		public IEnumerable<Product> Products { get; set; }
 		public OrderStatus Status { get; set; }
-		internal ILogger Logger { get; set; }
+		public ILogger Logger { get; set; }
 		public decimal AmountCharged { get; internal set; }
 		public double Discount { get; internal set; }
 		public string Name { get; private set; }
@@ -17,16 +18,17 @@ namespace Core.Domain.Contexts.Ordering {
 			: base(Id.Null()) {
 		}
 
-		internal SelfServiceOrder(ISelfServicePaymentService paymentService, OrderInfo orderInfo, PaymentInfo paymentInfo)
+		internal SelfServiceOrder(ISelfServicePaymentService paymentService, ILogger logger, OrderInfo orderInfo, PaymentInfo paymentInfo)
 			: base(orderInfo.Id) {
+			Logger = logger;
 			CreateNewOrder(paymentService, orderInfo, paymentInfo);
 		}
 
 		private void CreateNewOrder(ISelfServicePaymentService paymentService, OrderInfo orderInfo, PaymentInfo paymentInfo) {
-
-			var result = paymentService.ProcessPayment(orderInfo.Products, paymentInfo.CardNumber, paymentInfo.LoyaltyCardNumber);
-
-			IDomainEvent evt = new SelfServiceOrderCreated(orderInfo.Id,
+			IDomainEvent evt;
+			try {
+				var result = paymentService.ProcessPayment(orderInfo.Products, paymentInfo.CardNumber, paymentInfo.LoyaltyCardNumber);
+				evt = new SelfServiceOrderCreated(orderInfo.Id,
 				orderInfo.Products,
 				orderInfo.Name,
 				orderInfo.Comments,
@@ -34,6 +36,15 @@ namespace Core.Domain.Contexts.Ordering {
 				paymentInfo.LoyaltyCardNumber,
 				result.Discount,
 				result.AmountCharged);
+			}
+			catch (LoyaltyServiceException ex) {
+				evt = GetFailEvent(orderInfo.Products, paymentInfo, ex);
+				Logger.Error(ex);
+			}
+			catch (PaymentServiceException ex) {
+				evt = GetFailEvent(orderInfo.Products, paymentInfo, ex);
+				Logger.Error(ex);
+			}
 
 			UpdateFromEvent(evt);
 			ApplyEvent(evt);
@@ -65,7 +76,18 @@ namespace Core.Domain.Contexts.Ordering {
 			if (!evt.Id.Equals(Id))
 				throw new Exception("Catastrophic failure!");
 
-			Status = OrderStatus.Completed;
+			if (Status == OrderStatus.Payed)
+				Status = OrderStatus.Completed;
+			else
+				throw new NotSupportedException("Order status must be payed");
+		}
+
+		private void UpdateFromEvent(SelfServiceOrderStartFailed evt) {
+			Status = OrderStatus.Failed;
+		}
+
+		private IDomainEvent GetFailEvent(IEnumerable<Product> products, PaymentInfo paymentInfo, Exception ex) {
+			return new SelfServiceOrderStartFailed(Id, products, paymentInfo, ex.Message);
 		}
 	}
 }

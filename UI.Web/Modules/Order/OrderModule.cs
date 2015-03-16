@@ -21,9 +21,11 @@ namespace UI.Web.Modules.Order {
 
 	public class OrderModule : NancyModule {
 		private readonly IItemInfoRepository<ProductInfo> _inventoryItemRepository;
+		private readonly ILogger _logger;
 		private IDomainCommandDispatcher _commandDispatcher;
-		public OrderModule(IItemInfoRepository<ProductInfo> inventoryItemRepository) {
+		public OrderModule(IItemInfoRepository<ProductInfo> inventoryItemRepository,ILogger logger) {
 			_inventoryItemRepository = inventoryItemRepository;
+			_logger = logger;
 
 			Get["/Order", true] = async (p, ct) => View[await GetOrderViewModel()];
 			Post["/Order", true] = async (p, ct) => await PostOrderViewModel(p, ct);
@@ -46,7 +48,7 @@ namespace UI.Web.Modules.Order {
 			Task<Response> response;
 
 			try {
-				_commandDispatcher = CommandDispatchers.GetDirect(EventDispathers.Domain.GetDirect(() => _commandDispatcher, LoggerFactory.Default), LoggerFactory.Default);
+				_commandDispatcher = CommandDispatchers.GetDirect(EventDispathers.Domain.GetDirect(() => _commandDispatcher, _logger), _logger);
 				await _commandDispatcher.Dispatch(command);
 
 				response = Task.FromResult(new Response {
@@ -66,7 +68,7 @@ namespace UI.Web.Modules.Order {
 		}
 
 		private async Task<OrderViewModel> GetOrderViewModel() {
-			var products = (await _inventoryItemRepository.GetAllAsync()).Select(x => new ProductViewModel {
+			var products = (await new CachedProductInfoRepository(_inventoryItemRepository).GetAllAsync()).Select(x => new ProductViewModel {
 				Id = x.Id,
 				Name = x.Name,
 				Price = x.Price.ToString("#.00")

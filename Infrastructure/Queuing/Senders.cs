@@ -9,14 +9,14 @@ namespace Infrastructure.Queuing {
 	public class Senders{
 		
 		public static ISender<IDomainCommand> ForRabbitCommand(ILogger logger) {
-			return new Rabbit.Sender(Serializers.Json<IDomainCommand>().Serialize, logger);
+			return new Rabbit.Sender(x=>Serializers.Json<IDomainCommand>().Serialize(x), logger);
 		}
 		public static ISender<IDomainEventNotificationMessage> ForRabbitEventNotification(ILogger logger) {
-			return new Rabbit.Sender(Serializers.Json<IDomainEventNotificationMessage>().Serialize, logger);
+			return new Rabbit.Sender(x => Serializers.Json<IDomainEventNotificationMessage>().Serialize(x), logger);
 		}
 
 		public static ISender<IApplicationEventNotificationMessage> ForRabbitApplicationEventNotification(ILogger logger) {
-			return new Rabbit.Sender(Serializers.Json<IApplicationEventNotificationMessage>().Serialize, logger);
+			return new Rabbit.Sender(x => Serializers.JsonNoTypeInfo<IApplicationEventNotificationMessage>().Serialize(x), logger);
 		}
 
 		public static ISender<IDomainCommand> ForInMemoryCommand(ILogger logger) {
@@ -26,5 +26,8 @@ namespace Infrastructure.Queuing {
 			return new InMemory.Sender(logger);
 		}
 
+		public static ISender<IApplicationEventNotificationMessage> ForInMemoryApplicationEventNotification(ILogger logger) {
+			return new InMemory.Sender(logger);
+		}
 	}
 }

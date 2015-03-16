@@ -45,6 +45,7 @@
     <Compile Include="Domain\Contexts\Ordering\Commands\CreateSelfServiceOrder.cs" />
     <Compile Include="Domain\Contexts\Ordering\Events\SelfServiceOrderCompleted.cs" />
     <Compile Include="Domain\Contexts\Ordering\Events\SelfServiceOrderCreated.cs" />
+    <Compile Include="Domain\Contexts\Ordering\Events\SelfServiceOrderStartFailed.cs" />
     <Compile Include="Domain\Contexts\Ordering\Messages\OrderCompletedNotificationMessage.cs" />
     <Compile Include="Domain\Contexts\Ordering\Messages\OrderCreatedNotificationMessage.cs" />
     <Compile Include="Application\Messages\OrderStartedApplicationNotificationMessage.cs" />
@@ -55,6 +56,7 @@
     <Compile Include="Domain\Contexts\Ordering\Exceptions\DomainException.cs" />
     <Compile Include="Domain\Contexts\Ordering\Exceptions\OrderException.cs" />
     <Compile Include="Domain\Contexts\Ordering\Messages\SelfServiceOrderCreatedNotificationMessage.cs" />
+    <Compile Include="Domain\Contexts\Ordering\Messages\SelfServiceOrderStartFailedNotificationMessage.cs" />
     <Compile Include="Domain\Contexts\Ordering\OrderStatus.cs" />
     <Compile Include="Domain\Contexts\Ordering\PaymentReceipt.cs" />
     <Compile Include="Domain\Contexts\Ordering\SelfServiceOrder.cs" />

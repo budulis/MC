@@ -6,7 +6,7 @@ using Core.Domain.Contexts.Ordering.Commands;
 
 namespace Core.Handlers {
 	public sealed class HandlerForCreateSelfServiceOrder : Handler<CreateSelfServiceOrder> {
-		private IInfrastructureService _infrastructureService;
+		private readonly IInfrastructureService _infrastructureService;
 		public HandlerForCreateSelfServiceOrder(IInfrastructureService infrastructureService, IDomainEventDispather domainEventDispather)
 			: base(infrastructureService.EventStore,
 				infrastructureService.DiscountService,
@@ -31,9 +31,7 @@ namespace Core.Handlers {
 				LoyaltyCardNumber = command.LoyaltyCardNumber
 			};
 
-			var order = new SelfServiceOrder(_infrastructureService.SelfServicePaymentService, oi, pi) {
-				Logger = Logger
-			};
+			var order = new SelfServiceOrder(_infrastructureService.SelfServicePaymentService, Logger, oi, pi);
 			await Store.AddAsync(order.GetType(), order.Id, order.Events.ToArray(), order.CurrentSequenceNumber);
 
 			await DomainEventDispather.Dispatch(order.Events.Select(x => x.ToMessage()));

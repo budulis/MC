@@ -32,7 +32,6 @@ namespace Core.Domain.Contexts.Ordering.Messages
 				Payment = Payment,
 				Products = Products,
 				ReplyTo = ReplyTo,
-				Sender = GetType().ToString()
 			};
 		}
 	}

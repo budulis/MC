@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using System.Text;
 using Core.Domain;
 
-namespace Core.ReadModel
-{
+namespace Core.ReadModel {
 	public class ReceiptReadModel : IReadModel {
 		private readonly StringBuilder _sb;
+
+		public ReceiptReadModel() {
+			_sb = new StringBuilder();
+		}
+
 		public string Id { get; set; }
 		public string LoyaltyCard { get; set; }
 		public decimal AmountCharged { get; set; }
