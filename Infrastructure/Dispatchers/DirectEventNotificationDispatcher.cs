@@ -15,13 +15,16 @@ namespace Infrastructure.Dispatchers {
 		private readonly ILogger _logger;
 		private readonly IReadModelRepository<OrderReadModel> _orderReadModelRepository;
 		private readonly Func<IDomainCommandDispatcher> _domainCommandDispatcher;
+		private readonly Func<IApplicationEventDispather> _applicationEventDispatherFunc;
 
-		public DirectEventNotificationDispatcher(ILogger logger, 
-			ReadModelRepositoryFactory factory, 
-			Func<IDomainCommandDispatcher> domainCommandDispatcher) {
+		public DirectEventNotificationDispatcher(ILogger logger,
+			ReadModelRepositoryFactory factory,
+			Func<IDomainCommandDispatcher> domainCommandDispatcher, 
+			Func<IApplicationEventDispather> applicationEventDispatherFunc) {
 			_logger = logger;
 			_orderReadModelRepository = factory.Get<OrderReadModel>();
 			_domainCommandDispatcher = domainCommandDispatcher;
+			_applicationEventDispatherFunc = applicationEventDispatherFunc;
 			}
 
 		public void Dispose() {
@@ -48,13 +51,11 @@ namespace Infrastructure.Dispatchers {
 		}
 
 		private Task DispatchNotification(SelfServiceOrderCreatedNotificationMessage m) {
-			var dispather = EventDispathers.Application.GetQueued(_logger);
-			return new OnSelfServiceOrderCreated(_domainCommandDispatcher(), _orderReadModelRepository, dispather).Notify(m);
+			return new OnSelfServiceOrderCreated(_domainCommandDispatcher(), _orderReadModelRepository, _applicationEventDispatherFunc()).Notify(m);
 		}
 
 		private Task DispatchNotification(OrderStartedNotificationMessage m) {
-			var dispather = EventDispathers.Application.GetQueued(_logger);
-			return new OnOrderStarted(_domainCommandDispatcher(), _orderReadModelRepository, dispather).Notify(m);
+			return new OnOrderStarted(_domainCommandDispatcher(), _orderReadModelRepository, _applicationEventDispatherFunc()).Notify(m);
 		}
 
 		private Task DispatchNotification(OrderStartFailedNotificationMessage m) {

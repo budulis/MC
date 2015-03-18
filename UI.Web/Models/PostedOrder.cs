@@ -1,3 +1,7 @@
+using System.Linq;
+using Core.Domain;
+using Core.Domain.Contexts.Ordering.Commands;
+
 namespace UI.Web.Models
 {
 	public class PostedOrder {
@@ -6,5 +10,10 @@ namespace UI.Web.Models
 		public string Comments { get; set; }
 		public string CardNumber { get; set; }
 		public string LoyaltyCardNumber { get; set; }
+
+		internal IDomainCommand ToCommand(Id orderId,Product[] products)
+		{
+			return new CreateSelfServiceOrder(orderId, products, CustomerName, Comments, CardNumber, LoyaltyCardNumber);
+		}
 	}
 }

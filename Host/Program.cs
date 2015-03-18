@@ -15,9 +15,9 @@ namespace Host {
 
 			var logger = LoggerFactory.Default;
 
-			var commandDispatcher = CommandDispatchers.GetDirect(EventDispathers.Domain.GetQueued(logger),logger);
-			var eventDispatcher = EventDispathers.Domain.GetDirect(() => commandDispatcher, logger);
-			var appEventDispatcher = EventDispathers.Application.GetDirect(logger);
+			var commandDispatcher = CommandDispatchers.GetDirect(EventDispathers.Domain.GetQueued(logger), logger);
+			var appEventDispatcher = EventDispathers.Application.GetQueued(logger);
+			var eventDispatcher = EventDispathers.Domain.GetDirect(() => commandDispatcher, () => appEventDispatcher, logger);
 
 			var cts = new CancellationTokenSource();
 

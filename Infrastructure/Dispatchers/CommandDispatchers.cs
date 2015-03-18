@@ -16,7 +16,7 @@ namespace Infrastructure.Dispatchers {
 
 		public static IDomainCommandDispatcher GetDirect(IDomainEventDispather domainEventDispather, ILogger logger) {
 
-			IEventStore eventStore = EventStores.SqlServer;
+			IEventStore eventStore = EventStores.Redis;
 			IDiscountService discountService = new DiscountService();
 			ICardPaymentService paymentService = new CardPaymentService();
 			ICashierRepository cashiers = new CashierRepository();

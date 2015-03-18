@@ -95,6 +95,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstrapper.cs" />
+    <Compile Include="Hubs\NotificationHub.cs" />
     <Compile Include="Models\OrderDataViewModel.cs" />
     <Compile Include="Models\OrderSummaryViewModel.cs" />
     <Compile Include="Models\OrderViewModel.cs" />

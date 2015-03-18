@@ -47,7 +47,7 @@
 				<input id="loyaltyCardNumber" type="text" value="111-222-333" />
 			</div>
 		</div>
-		<br/>
+		<br />
 		<div class="form-group">
 			<div class="col-sm-offset-2 col-sm-10">
 				<button type="submit" class="btn btn-default" id="submitOrder">Submit</button>
@@ -85,11 +85,11 @@
 				}).done(function (data, statusText, xhr) {
 					if (xhr.status == 202) {
 						var orderid = xhr.getResponseHeader("location");
-						toastr.success("Order id: " + orderid, "Order is placed");
+						toastr.success("Order id: " + orderid, "Order is placed", { "timeOut": "0", "extendedTimeOut": "0", "closeButton": true, "positionClass": "toast-bottom-full-width" });
 					}
 				}).fail(function (xhr, statusText, errorThrown) {
 					var orderid = xhr.getResponseHeader("location");
-					toastr.error("Error occured. Id:" + orderid);
+					toastr.error("Id:" + orderid, "Error occured", { "timeOut": "0", "extendedTimeOut": "0", "closeButton": true, "positionClass": "toast-top-center" });
 				});;
 			});
 		});

@@ -3,14 +3,14 @@ using Core;
 using Core.ReadModel;
 using Infrastructure.ReadModel;
 
-namespace Infrastructure.Dispatchers
-{
-	public class EventDispathers
-	{
+namespace Infrastructure.Dispatchers {
+	public class EventDispathers {
+		private static IApplicationEventDispather _appEventDispatcher;
+		private static readonly object SyncBlock = new object();
 		public class Domain {
-			public static IDomainEventDispather GetDirect(Func<IDomainCommandDispatcher> domainCommandDispatcher, ILogger logger) {
+			public static IDomainEventDispather GetDirect(Func<IDomainCommandDispatcher> domainCommandDispatcher, Func<IApplicationEventDispather> applicationEventDispather, ILogger logger) {
 				var factory = new ReadModelRepositoryFactory();
-				return new DirectEventNotificationDispatcher(logger, factory, domainCommandDispatcher);
+				return new DirectEventNotificationDispatcher(logger, factory, domainCommandDispatcher, applicationEventDispather);
 			}
 			public static IDomainEventDispather GetQueued(ILogger logger) {
 				return new QueuedEventNotificationDispather(logger);
@@ -22,7 +22,10 @@ namespace Infrastructure.Dispatchers
 				return new DirectApplicationEventNotificationDispatcher(logger, factory.Get<ReceiptReadModel>());
 			}
 			public static IApplicationEventDispather GetQueued(ILogger logger) {
-				return new QueuedEventNotificationDispather(logger);
+				lock (SyncBlock)
+				{
+					return _appEventDispatcher ?? (_appEventDispatcher = new QueuedEventNotificationDispather(logger));
+				}
 			}
 		}
 	}

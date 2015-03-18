@@ -23,7 +23,7 @@ namespace UI.Web.Modules.Order {
 		private readonly IItemInfoRepository<ProductInfo> _inventoryItemRepository;
 		private readonly ILogger _logger;
 		private IDomainCommandDispatcher _commandDispatcher;
-		public OrderModule(IItemInfoRepository<ProductInfo> inventoryItemRepository,ILogger logger) {
+		public OrderModule(IItemInfoRepository<ProductInfo> inventoryItemRepository, ILogger logger) {
 			_inventoryItemRepository = inventoryItemRepository;
 			_logger = logger;
 
@@ -43,24 +43,29 @@ namespace UI.Web.Modules.Order {
 			}
 
 			var orderId = Id.New();
-			var command = new CreateSelfServiceOrder(orderId, products.ToArray(), viewModel.CustomerName, viewModel.Comments, viewModel.CardNumber,viewModel.LoyaltyCardNumber);
+			var command = viewModel.ToCommand(orderId, products.ToArray());
+			return await SendCommand(command);
+		}
 
+		private async Task<Response> SendCommand(IDomainCommand command) {
 			Task<Response> response;
-
+			
 			try {
-				_commandDispatcher = CommandDispatchers.GetDirect(EventDispathers.Domain.GetDirect(() => _commandDispatcher, _logger), _logger);
+				var appEventDispatcher = EventDispathers.Application.GetQueued(_logger);
+				var domainEventDispatcher = EventDispathers.Domain.GetDirect(() => _commandDispatcher, () => appEventDispatcher, _logger);
+				_commandDispatcher = CommandDispatchers.GetDirect(domainEventDispatcher, _logger);
 				await _commandDispatcher.Dispatch(command);
-
+				
 				response = Task.FromResult(new Response {
 					StatusCode = HttpStatusCode.Accepted,
-					Headers = new Dictionary<string, string> { { "location", orderId.ToString() } }
+					Headers = new Dictionary<string, string> { { "location", command.Id.ToString() } }
 				});
 			}
 			catch (Exception ex) {
 				Console.WriteLine(ex);
 				response = Task.FromResult(new Response {
 					StatusCode = HttpStatusCode.InternalServerError,
-					Headers = new Dictionary<string, string> { { "location", orderId.ToString() } }
+					Headers = new Dictionary<string, string> { { "location", command.Id.ToString() } }
 				});
 			}
 
