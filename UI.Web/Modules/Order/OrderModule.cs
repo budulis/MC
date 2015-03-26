@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Core;
 using Core.Domain;
-using Core.Domain.Contexts.Ordering.Commands;
+using Core.Domain.Contexts.Ordering.Events;
+using Core.Domain.Contexts.Ordering.Messages;
 using Infrastructure.Dispatchers;
-using Infrastructure.Services.Logging;
 using Infrastructure.Services.Product;
 using Nancy;
 using Nancy.ModelBinding;
-using Nancy.ModelBinding.DefaultBodyDeserializers;
-using Nancy.Responses;
-using Nancy.ViewEngines.Razor;
 using UI.Web.Models;
 
 namespace UI.Web.Modules.Order {
@@ -47,15 +43,18 @@ namespace UI.Web.Modules.Order {
 			return await SendCommand(command);
 		}
 
-		private async Task<Response> SendCommand(IDomainCommand command) {
+		private Task<Response> SendCommand(IDomainCommand command) {
 			Task<Response> response;
-			
+
 			try {
 				var appEventDispatcher = EventDispathers.Application.GetQueued(_logger);
 				var domainEventDispatcher = EventDispathers.Domain.GetDirect(() => _commandDispatcher, () => appEventDispatcher, _logger);
+				domainEventDispatcher = domainEventDispatcher.Register(typeof(OrderCompletedNotificationMessage), x => new OnOrderCompleted().Notify((OrderCompletedNotificationMessage)x));
+				domainEventDispatcher = domainEventDispatcher.Register(typeof(SelfServiceOrderStartFailedNotificationMessage), x => new OnOrderFailure().Notify((SelfServiceOrderStartFailedNotificationMessage)x));
+
 				_commandDispatcher = CommandDispatchers.GetDirect(domainEventDispatcher, _logger);
-				await _commandDispatcher.Dispatch(command);
-				
+				_commandDispatcher.Dispatch(command);
+
 				response = Task.FromResult(new Response {
 					StatusCode = HttpStatusCode.Accepted,
 					Headers = new Dictionary<string, string> { { "location", command.Id.ToString() } }
@@ -69,7 +68,7 @@ namespace UI.Web.Modules.Order {
 				});
 			}
 
-			return await response;
+			return response;
 		}
 
 		private async Task<OrderViewModel> GetOrderViewModel() {

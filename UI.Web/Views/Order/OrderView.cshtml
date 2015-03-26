@@ -3,97 +3,99 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<meta charset="utf-8" />
-	<title>Products</title>
-	<link href="/Content/Css/toastr.css" rel="stylesheet" type="text/css" />
+    <meta charset="utf-8" />
+    <title>Products</title>
+    <link href="/Content/Css/toastr.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
 
-	<div class="container">
+    <div class="container">
 
-		@foreach (var m in Model.AvailableProducts) {
-			<div class="checkbox">
-				<label>
-					<input type="checkbox" class="form-control" id="chbx_@m.Id" value="@m.Id"/>
-					@m.Name [@m.Price]
-				</label>
-			</div>
-	}
+        @foreach (var m in Model.AvailableProducts) {
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" class="form-control" id="chbx_@m.Id" value="@m.Id" />
+                    @m.Name [@m.Price]
+                </label>
+            </div>
+        }
 
-		<div class="form-group">
-			<label>Name</label>
-			<div class="col-sm-offset-2 col-sm-10">
-				<input id="name" type="text" value="John Doe" />
-			</div>
-		</div>
+        <div class="form-group">
+            <label>Name</label>
+            <div class="col-sm-offset-2 col-sm-10">
+                <input id="name" type="text" value="John Doe" />
+            </div>
+        </div>
 
-		<div class="form-group">
-			<label>Additional information</label>
-			<div class="col-sm-offset-2 col-sm-10">
-				<textarea id="comments" style="width: 391px; height: 82px;">No onions please :)</textarea>
-			</div>
-		</div>
+        <div class="form-group">
+            <label>Additional information</label>
+            <div class="col-sm-offset-2 col-sm-10">
+                <textarea id="comments" style="width: 391px; height: 82px;">No onions please :)</textarea>
+            </div>
+        </div>
 
-		<div class="form-group">
-			<label>Card number</label>
-			<div class="col-sm-offset-2 col-sm-10">
-				<input id="cardNumber" type="text" value="4532638892686748" />
-			</div>
-		</div>
-		<br />
-		<div class="form-group">
-			<label>Loyalty card number</label>
-			<div class="col-sm-offset-2 col-sm-10">
-				<input id="loyaltyCardNumber" type="text" value="111-222-333" />
-			</div>
-		</div>
-		<br />
-		<div class="form-group">
-			<div class="col-sm-offset-2 col-sm-10">
-				<button type="submit" class="btn btn-default" id="submitOrder">Submit</button>
-			</div>
-		</div>
+        <div class="form-group">
+            <label>Card number</label>
+            <div class="col-sm-offset-2 col-sm-10">
+                <input id="cardNumber" type="text" value="4532638892686748" />
+            </div>
+        </div>
+        <br />
+        <div class="form-group">
+            <label>Loyalty card number</label>
+            <div class="col-sm-offset-2 col-sm-10">
+                <input id="loyaltyCardNumber" type="text" value="111-222-333" />
+            </div>
+        </div>
+        <br />
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-default" id="submitOrder">Submit</button>
+            </div>
+        </div>
 
-	</div>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-	<script src="/Content/JS/toastr.js"></script>
-	<script src="/Content/JS/jquery-1.6.4.min.js"></script>
-	<script src="/Content/JS/jquery.signalR-2.2.0.min.js"></script>
-	<script src="/Content/signalr/hubs"></script>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="/Content/JS/toastr.js"></script>
+    <script src="/Content/JS/jquery-1.6.4.min.js"></script>
+    <script src="/Content/JS/jquery.signalR-2.2.0.min.js"></script>
+    <script src="/Content/signalr/hubs"></script>
+    <script src="/Content/JS/notification.js"></script>
+    <script src="/Content/JS/utils.js"></script>
+    <script>
+        var data = [];
+        var name;
+        var comments;
+        var cardNumber;
+        var loyaltyCardNumber;
+        $(function () {
+            $("#submitOrder").click(function () {
+                name = $("#name").val();
+                comments = $("#comments").val();
+                cardNumber = $("#cardNumber").val();
+                loyaltyCardNumber = $("#loyaltyCardNumber").val();
+                data = [];
+                $(":checked").each(function () {
+                    data.push($(this).val());
+                });
+                $.ajax({
+                    url: "/Order",
+                    type: "POST",
+                    data: "{\"customerName\":\"" + name + "\",\"comments\":\"" + comments + "\",\"cardNumber\":\"" + cardNumber + "\",\"loyaltyCardNumber\":\"" + loyaltyCardNumber + "\",\"productIDs\":" + JSON.stringify(data) + "}",
+                    contentType: 'application/json; charset=utf-8',
+                }).done(function (data, statusText, xhr) {
+                    if (xhr.status === 202) {
+                        var orderid = xhr.getResponseHeader("location");
+                        showInfoToast(orderid, "Order is placed");
+                        subscribe_for_status_updates(orderid);
+                    }
+                }).fail(function (xhr, statusText, errorThrown) {
+                    var orderid = xhr.getResponseHeader("location");
+                    showErrorToast("Id:" + orderid, "Error occured");
+                });;
+            });
+        });
 
-	<script>
-		var data = [];
-		var name;
-		var comments;
-		var cardNumber;
-		var loyaltyCardNumber;
-		$(function () {
-			$('#submitOrder').click(function () {
-				name = $("#name").val();
-				comments = $("#comments").val();
-				cardNumber = $("#cardNumber").val();
-				loyaltyCardNumber = $("#loyaltyCardNumber").val();
-				data = [];
-				$(":checked").each(function () {
-					data.push($(this).val());
-				});
-				$.ajax({
-					url: "/Order",
-					type: "POST",
-					data: "{\"customerName\":\"" + name + "\",\"comments\":\"" + comments + "\",\"cardNumber\":\"" + cardNumber + "\",\"loyaltyCardNumber\":\"" + loyaltyCardNumber + "\",\"productIDs\":" + JSON.stringify(data) + "}",
-					contentType: 'application/json; charset=utf-8',
-				}).done(function (data, statusText, xhr) {
-					if (xhr.status == 202) {
-						var orderid = xhr.getResponseHeader("location");
-						toastr.success("Order id: " + orderid, "Order is placed", { "timeOut": "0", "extendedTimeOut": "0", "closeButton": true, "positionClass": "toast-bottom-full-width" });
-					}
-				}).fail(function (xhr, statusText, errorThrown) {
-					var orderid = xhr.getResponseHeader("location");
-					toastr.error("Id:" + orderid, "Error occured", { "timeOut": "0", "extendedTimeOut": "0", "closeButton": true, "positionClass": "toast-top-center" });
-				});;
-			});
-		});
-
-	</script>
+    </script>
 </body>
 </html>

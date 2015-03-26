@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{695F73D5-C1AD-455E-AA02-BD609B4FF4B2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Host", "Host\Host.csproj", "{9D269C9A-30DC-4252-954D-6B3DFF6E246D}"
@@ -12,6 +14,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestRunner", "TestRunner\TestRunner.csproj", "{2842DD75-57EB-4EED-BF05-5E661131BB48}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UI.Web", "UI.Web\UI.Web.csproj", "{247E8125-1559-45D0-B1B2-673E5CB8FD05}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Python", "Python", "{A1DAE281-5B08-40C6-A574-5572838BFEE8}"
+EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "NewOrderProcessor", "NewOrderProcessor\NewOrderProcessor.pyproj", "{77C494D5-2029-499C-9D31-5F3F41A88EEF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,8 +49,13 @@ Global
 		{247E8125-1559-45D0-B1B2-673E5CB8FD05}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{247E8125-1559-45D0-B1B2-673E5CB8FD05}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{247E8125-1559-45D0-B1B2-673E5CB8FD05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77C494D5-2029-499C-9D31-5F3F41A88EEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77C494D5-2029-499C-9D31-5F3F41A88EEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{77C494D5-2029-499C-9D31-5F3F41A88EEF} = {A1DAE281-5B08-40C6-A574-5572838BFEE8}
 	EndGlobalSection
 EndGlobal

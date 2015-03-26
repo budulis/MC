@@ -10,13 +10,6 @@ using Nancy.TinyIoc;
 
 namespace UI.Web {
 	public class Bootstrapper : DefaultNancyBootstrapper {
-		
-		protected override void ApplicationStartup(TinyIoCContainer container, IPipelines pipelines)
-		{
-
-			base.ApplicationStartup(container, pipelines);
-		}
-
 		protected override void ConfigureApplicationContainer(TinyIoCContainer container)
 		{
 			base.ConfigureApplicationContainer(container);

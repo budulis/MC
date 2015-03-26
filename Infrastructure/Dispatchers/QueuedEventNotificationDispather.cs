@@ -24,6 +24,11 @@ namespace Infrastructure.Dispatchers {
 			await _sender.SendAsync(evt);
 		}
 
+		public IDomainEventDispather Register(Type type, Func<IDomainEventNotificationMessage, Task> subscriber)
+		{
+			throw new NotSupportedException("Can not register subscribers to queued dispatcher");
+		}
+
 		public async Task Dispatch(IApplicationEventNotificationMessage evt) {
 			await _appEventSender.SendAsync(evt);
 		}

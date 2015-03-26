@@ -7,7 +7,12 @@ using Core.Subscribers;
 using Infrastructure.ReadModel;
 using Microsoft.CSharp.RuntimeBinder;
 using System;
+using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace Infrastructure.Dispatchers {
@@ -16,16 +21,89 @@ namespace Infrastructure.Dispatchers {
 		private readonly IReadModelRepository<OrderReadModel> _orderReadModelRepository;
 		private readonly Func<IDomainCommandDispatcher> _domainCommandDispatcher;
 		private readonly Func<IApplicationEventDispather> _applicationEventDispatherFunc;
+		private readonly ReadModelRepositoryFactory _factory;
+		private IDictionary<Type, List<Func<IDomainEventNotificationMessage, Task>>> _subscribers;
 
 		public DirectEventNotificationDispatcher(ILogger logger,
 			ReadModelRepositoryFactory factory,
-			Func<IDomainCommandDispatcher> domainCommandDispatcher, 
+			Func<IDomainCommandDispatcher> domainCommandDispatcher,
 			Func<IApplicationEventDispather> applicationEventDispatherFunc) {
 			_logger = logger;
-			_orderReadModelRepository = factory.Get<OrderReadModel>();
+			_factory = factory;
+			_orderReadModelRepository = _factory.Get<OrderReadModel>();
 			_domainCommandDispatcher = domainCommandDispatcher;
 			_applicationEventDispatherFunc = applicationEventDispatherFunc;
-			}
+
+			_subscribers = new Dictionary<Type, List<Func<IDomainEventNotificationMessage, Task>>>
+			{
+				{
+					typeof (OrderCreatedNotificationMessage),
+					new List<Func<IDomainEventNotificationMessage, Task>>
+					{
+						x => new OnOrderCreated(_orderReadModelRepository).Notify((OrderCreatedNotificationMessage) x)
+					}
+				},
+				{
+					typeof (SelfServiceOrderCreatedNotificationMessage),
+					new List<Func<IDomainEventNotificationMessage, Task>>
+					{
+						x =>
+							new OnSelfServiceOrderCreated(_domainCommandDispatcher(), _orderReadModelRepository,
+								_applicationEventDispatherFunc()).Notify((SelfServiceOrderCreatedNotificationMessage) x)
+					}
+				},
+				{
+					typeof (OrderStartedNotificationMessage),
+					new List<Func<IDomainEventNotificationMessage, Task>>
+					{
+						x =>
+							new OnOrderStarted(_domainCommandDispatcher(), _orderReadModelRepository, _applicationEventDispatherFunc())
+								.Notify((OrderStartedNotificationMessage) x)
+					}
+				},
+				{
+					typeof (OrderStartFailedNotificationMessage),
+					new List<Func<IDomainEventNotificationMessage, Task>>
+					{
+						x => new OnOrderStartFailed(_orderReadModelRepository).Notify((OrderStartFailedNotificationMessage) x)
+					}
+				},
+				{
+					typeof (SelfServiceOrderStartFailedNotificationMessage),
+					new List<Func<IDomainEventNotificationMessage, Task>>
+					{
+						x =>
+							new OnSelfServiceOrderStartFailed(_orderReadModelRepository).Notify(
+								(SelfServiceOrderStartFailedNotificationMessage) x)
+					}
+				},
+				{
+					typeof (OrderCompletedNotificationMessage),
+					new List<Func<IDomainEventNotificationMessage, Task>>
+					{
+						x => new OnOrderCompleted(_orderReadModelRepository).Notify((OrderCompletedNotificationMessage) x)
+					}
+				},
+				{
+					typeof (ProductionOrderCreatedNotificationMessage),
+					new List<Func<IDomainEventNotificationMessage, Task>>
+					{
+						x =>
+							new OnProductionOrderCreated(_domainCommandDispatcher(), _orderReadModelRepository).Notify(
+								(ProductionOrderCreatedNotificationMessage) x)
+					}
+				},
+				{
+					typeof (ProductionOrderCompletedNotificationMessage),
+					new List<Func<IDomainEventNotificationMessage, Task>>
+					{
+						x =>
+							new OnProductionOrderCompleted(_domainCommandDispatcher()).Notify((ProductionOrderCompletedNotificationMessage) x)
+					}
+				}
+			};
+
+		}
 
 		public void Dispose() {
 		}
@@ -38,44 +116,40 @@ namespace Infrastructure.Dispatchers {
 
 		public async Task Dispatch(IDomainEventNotificationMessage evt) {
 			try {
-				_logger.Audit(evt.GetType().Name.Replace("NotificationMessage", ""));
-				await DispatchNotification((dynamic)evt);
+				var results = _subscribers[evt.GetType()].Select(x => x(evt));
+				await Task.WhenAll(results);
 			}
-			catch (RuntimeBinderException e) {
+			catch (KeyNotFoundException e) {
 				_logger.Error(e);
 			}
 		}
 
-		private Task DispatchNotification(OrderCreatedNotificationMessage m) {
-			return new OnOrderCreated(_orderReadModelRepository).Notify(m);
+		public IDomainEventDispather Register(Type type, Func<IDomainEventNotificationMessage, Task> subscriber) {
+			var d = new DirectEventNotificationDispatcher(_logger, _factory, _domainCommandDispatcher, _applicationEventDispatherFunc) {
+				_subscribers = AddSubscriber(type, subscriber)
+			};
+			return d;
 		}
 
-		private Task DispatchNotification(SelfServiceOrderCreatedNotificationMessage m) {
-			return new OnSelfServiceOrderCreated(_domainCommandDispatcher(), _orderReadModelRepository, _applicationEventDispatherFunc()).Notify(m);
-		}
+		private IDictionary<Type, List<Func<IDomainEventNotificationMessage, Task>>> AddSubscriber(Type type,
+			Func<IDomainEventNotificationMessage, Task> subscriber) {
 
-		private Task DispatchNotification(OrderStartedNotificationMessage m) {
-			return new OnOrderStarted(_domainCommandDispatcher(), _orderReadModelRepository, _applicationEventDispatherFunc()).Notify(m);
-		}
+			var d = _subscribers.ToDictionary(x => x.Key, y => y.Value.Select(x => x).ToList());
 
-		private Task DispatchNotification(OrderStartFailedNotificationMessage m) {
-			return new OnOrderStartFailed(_orderReadModelRepository).Notify(m);
-		}
+			try {
+				List<Func<IDomainEventNotificationMessage, Task>> subscribers;
+				if (d.TryGetValue(type, out subscribers)) 
+					subscribers.Add(subscriber);
+				else 
+					subscribers = new List<Func<IDomainEventNotificationMessage, Task>>(new[] { subscriber });
 
-		private Task DispatchNotification(SelfServiceOrderStartFailedNotificationMessage m) {
-			return new OnSelfServiceOrderStartFailed(_orderReadModelRepository).Notify(m);
-		}
+				d[type] = subscribers;
+			}
+			catch (ArgumentException e) {
+				throw new Exception("Can not add subscriber.", e);
+			}
 
-		private Task DispatchNotification(OrderCompletedNotificationMessage m) {
-			return new OnOrderCompleted(_orderReadModelRepository).Notify(m);
-		}
-
-		private Task DispatchNotification(ProductionOrderCreatedNotificationMessage m) {
-			return new OnProductionOrderCreated(_domainCommandDispatcher(), _orderReadModelRepository).Notify(m);
-		}
-
-		private Task DispatchNotification(ProductionOrderCompletedNotificationMessage m) {
-			return new OnProductionOrderCompleted(_domainCommandDispatcher()).Notify(m);
+			return d;
 		}
 	}
 }

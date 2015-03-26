@@ -95,12 +95,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bootstrapper.cs" />
+    <Compile Include="Hubs\ConnectionMapping.cs" />
     <Compile Include="Hubs\NotificationHub.cs" />
     <Compile Include="Models\OrderDataViewModel.cs" />
     <Compile Include="Models\OrderSummaryViewModel.cs" />
     <Compile Include="Models\OrderViewModel.cs" />
     <Compile Include="Models\PostedOrder.cs" />
     <Compile Include="Models\ProductViewModel.cs" />
+    <Compile Include="Modules\Order\OnOrderCompleted.cs" />
+    <Compile Include="Modules\Order\OnOrderFailure.cs" />
     <Compile Include="Modules\Order\OrderModule.cs" />
     <Compile Include="Modules\Order\OrderSummaryModule.cs" />
     <Compile Include="Program.cs" />
@@ -132,6 +135,9 @@
     <Content Include="Content\Css\toastr.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\JS\notification.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\JS\toastr.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -147,6 +153,9 @@
     <Content Include="Content\JS\jquery.signalR-2.2.0.js" />
     <Content Include="Content\JS\jquery.signalR-2.2.0.min.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\JS\utils.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

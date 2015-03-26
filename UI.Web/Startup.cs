@@ -13,6 +13,7 @@ namespace UI.Web
 				EnableDetailedErrors = true,
 			});
 			app.UseNancy();
+			
 		}
 	}
 }

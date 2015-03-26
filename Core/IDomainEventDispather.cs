@@ -9,5 +9,6 @@ namespace Core
 	{
 		Task Dispatch(IEnumerable<IDomainEventNotificationMessage> evt);
 		Task Dispatch(IDomainEventNotificationMessage evt);
+		IDomainEventDispather Register(Type type, Func<IDomainEventNotificationMessage, Task> subscriber);
 	}
 }

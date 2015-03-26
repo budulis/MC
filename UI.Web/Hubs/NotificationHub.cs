@@ -1,16 +1,21 @@
 ﻿using Microsoft.AspNet.SignalR;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace UI.Web.Hubs {
-	class NotificationHub : Hub {
-
-		public Task Subscribe(string id) {
+	public class NotificationHub : Hub {
+		private readonly static ConnectionMapping<string> Connections;
+		static NotificationHub() {
+			Connections = new ConnectionMapping<string>();
+		}
+		public Task Subscribe(string orderId) {
+			Connections.Add(orderId, Context.ConnectionId);
 			return Task.FromResult(true);
 		}
 
-		public Task BroadcastClear() {
-			return Clients.Others.clear();
+		public async Task Notify() {
+			Clients.Others.clear();
+			await Task.FromResult(true);
 		}
-
 	}
 }
