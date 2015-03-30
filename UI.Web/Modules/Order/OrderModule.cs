@@ -20,7 +20,7 @@ namespace UI.Web.Modules.Order {
 		private readonly ILogger _logger;
 		private IDomainCommandDispatcher _commandDispatcher;
 		public OrderModule(IItemInfoRepository<ProductInfo> inventoryItemRepository, ILogger logger) {
-			_inventoryItemRepository = inventoryItemRepository;
+			_inventoryItemRepository = new CachedProductInfoRepository(inventoryItemRepository);
 			_logger = logger;
 
 			Get["/Order", true] = async (p, ct) => View[await GetOrderViewModel()];
@@ -72,7 +72,7 @@ namespace UI.Web.Modules.Order {
 		}
 
 		private async Task<OrderViewModel> GetOrderViewModel() {
-			var products = (await new CachedProductInfoRepository(_inventoryItemRepository).GetAllAsync()).Select(x => new ProductViewModel {
+			var products = (await _inventoryItemRepository.GetAllAsync()).Select(x => new ProductViewModel {
 				Id = x.Id,
 				Name = x.Name,
 				Price = x.Price.ToString("#.00")

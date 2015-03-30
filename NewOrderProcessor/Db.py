@@ -10,7 +10,6 @@ class Db(object):
         orders = list()
         
         while 1:
-            
             row = cursor.fetchone()
             if not row:
                 break
@@ -19,7 +18,13 @@ class Db(object):
         cnxn.close()
         return orders
 
-    def InsertNewProduct(self,id, name,price,description=None):
+    def InsertProduct(self, id, name, price, description=None):
         cnxn = pyodbc.connect(r'Driver={SQL Server};Server=.\SQLEXPRESS;Database=McStore;Trusted_Connection=yes;')
-        cnxn.ex
+        cnxn.execute("INSERT INTO [McStore].[dbo].[Products]VALUES (?, ?, ?, ?)",id,name,price,description)
+        cnxn.commit()
+
+    def insert_reciept_info(self, reciept):
+        cnxn = pyodbc.connect(r'Driver={SQL Server};Server=.\SQLEXPRESS;Database=McStore;Trusted_Connection=yes;')
+        cnxn.execute("INSERT INTO [McStore].[dbo].[Receipts]VALUES(?,?,?,?,?,?,DEFAULT,?)",reciept)
+        cnxn.commit()
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Core.Application.Messages;
 
 namespace Core.Domain.Contexts.Ordering.Messages
@@ -21,7 +22,7 @@ namespace Core.Domain.Contexts.Ordering.Messages
 			return new OrderStartedApplicationNotificationMessage
 			{
 				Id = Id,
-				Amount = AmountCharged,
+				Amount = Products.Sum(x=>x.Price),
 				AmountCharged = AmountCharged,
 				Date = Date,
 				Discount = Discount,
