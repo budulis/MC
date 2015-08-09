@@ -6,7 +6,6 @@ using Core;
 using Core.Domain;
 using Core.Domain.Contexts.Ordering.Commands;
 using Infrastructure.DataBase;
-using Infrastructure.Dispatchers;
 using Infrastructure.Services.Logging;
 using Infrastructure.Services.Product;
 
@@ -16,10 +15,11 @@ namespace TestRunner {
 		private static readonly ILogger Logger = LoggerFactory.Default;
 
 		static void Main() {
-			var appEventDispatcher = EventDispathers.Application.GetQueued(Logger);
-			_domainCommandDispatcher = CommandDispatchers.GetDirect(EventDispathers.Domain.GetDirect(() => _domainCommandDispatcher, () => appEventDispatcher, Logger), Logger);
-			TestDomainModel();
+			//var appEventDispatcher = EventDispathers.Application.GetQueued(Logger);
+			//_domainCommandDispatcher = CommandDispatchers.GetDirect(EventDispathers.Domain.GetDirect(() => _domainCommandDispatcher, () => appEventDispatcher, Logger), Logger);
+			//TestDomainModel();
 		}
+
 
 		private static void TestDomainModel() {
 
@@ -36,7 +36,7 @@ namespace TestRunner {
 		private static void Produce(ITargetBlock<Id> target) {
 			var rnd = new Random();
 			IItemInfoRepository<ProductInfo> products = new CachedProductInfoRepository(new ProductInfoRepository(new DataBaseContext(LoggerFactory.Get<NullLogger>())));
-			Parallel.ForEach(Enumerable.Range(0, 100), new ParallelOptions { MaxDegreeOfParallelism = 8 }, async x => {
+			Parallel.ForEach(Enumerable.Range(0, 10), new ParallelOptions { MaxDegreeOfParallelism = 8 }, async x => {
 				var id = new Id(Guid.NewGuid());
 				var prods = (await products.GetAllAsync()).Select(p => new Product(p.Id, p.Name, p.Price));
 				var create = new CreateOrder(id, prods.ToArray(), "John Doe", "Some comments", "CA000000-0000-0000-0000-000000000001");

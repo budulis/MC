@@ -9,7 +9,7 @@ namespace Core.Domain.Contexts.Ordering {
 		public OrderStatus Status { get; set; }
 		public ILogger Logger { get; set; }
 		public decimal AmountCharged { get; internal set; }
-		public double Discount { get; internal set; }
+		public decimal Discount { get; internal set; }
 		public string Name { get; private set; }
 		public string Comments { get; private set; }
 		public string LoyaltyCardNumber { get; private set; }

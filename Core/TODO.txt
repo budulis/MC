@@ -1,6 +1,8 @@
 ﻿CORE
 	[-] Create unique id generator
 INFRASTRUCTURE
+	[-] Use ConnectionMap<T>
+	[-]	Remove all particular implementations of Loggers, DiscountService etc. from event messages.
 	[-] Refactor all exceptions into separate class to be singleton
 	[-] Implement in memory queue(buffer) to store messages while e.g. Rabbit is not accessible.
 	[-] Create common domain/application error queue to signal all intresting parties if app is down.

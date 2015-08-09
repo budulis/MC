@@ -13,6 +13,10 @@
     <OutputPath>.</OutputPath>
     <Name>NewOrderProcessor</Name>
     <RootNamespace>NewOrderProcessor</RootNamespace>
+    <InterpreterId>
+    </InterpreterId>
+    <InterpreterVersion>
+    </InterpreterVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>

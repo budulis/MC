@@ -1,12 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace UI.Web.Hubs
-{
+namespace UI.Web.Hubs {
 	public class ConnectionMapping<T> {
+
+		public static ConnectionMapping<T> Instance { get; private set; }
+
 		private readonly IDictionary<T, HashSet<string>> _connections;
-		public ConnectionMapping() {
+		private ConnectionMapping() {
 			_connections = new Dictionary<T, HashSet<string>>();
+		}
+
+		static ConnectionMapping() {
+			Instance = new ConnectionMapping<T>();
 		}
 
 		public int ConnectionCount {

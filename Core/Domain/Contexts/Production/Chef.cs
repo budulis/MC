@@ -14,10 +14,11 @@ namespace Core.Domain.Contexts.Production {
 		}
 
 		public void Cook(ProductionOrder o) {
-			foreach (var product in o.Products)
+			foreach (var product in o.Products) {
 				Logger.Audit(String.Format("Preparing [{0}]", product));
-			//Simulate longrunning work	
-			//Thread.Sleep(1500);
+				//Simulate longrunning work	
+				Thread.Sleep(1500);
+			}
 		}
 
 		public bool Equals(Chef other) {

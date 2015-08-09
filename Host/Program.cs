@@ -7,6 +7,7 @@ using Infrastructure.Services.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Core.Domain.Contexts.Ordering.Messages;
 
 namespace Host {
 	class Program {
@@ -18,6 +19,7 @@ namespace Host {
 			var commandDispatcher = CommandDispatchers.GetDirect(EventDispathers.Domain.GetQueued(logger), logger);
 			var appEventDispatcher = EventDispathers.Application.GetQueued(logger);
 			var eventDispatcher = EventDispathers.Domain.GetDirect(() => commandDispatcher, () => appEventDispatcher, logger);
+			eventDispatcher.Register(typeof (OrderCompletedNotificationMessage), Senders.ForRabbitEventNotification(logger).SendAsync);
 
 			var cts = new CancellationTokenSource();
 
@@ -27,8 +29,8 @@ namespace Host {
 			Task.Run(() => Receivers.ForRabbitEventNotification(logger)
 				.Recieve(async s => await eventDispatcher.Dispatch(await s), cts.Token), cts.Token);
 
-			Task.Run(() => Receivers.ForRabbitApplicationEventNotification(logger)
-				.Recieve(async s => await appEventDispatcher.Dispatch(await s), cts.Token), cts.Token);
+			//Task.Run(() => Receivers.ForRabbitApplicationEventNotification(logger)
+			//	.Recieve(async s => await appEventDispatcher.Dispatch(await s), cts.Token), cts.Token);
 
 			ConsoleKeyInfo keyInfo;
 
@@ -37,7 +39,6 @@ namespace Host {
 			} while (keyInfo.Key != ConsoleKey.Q);
 
 			cts.Cancel();
-
 		}
 	}
 }

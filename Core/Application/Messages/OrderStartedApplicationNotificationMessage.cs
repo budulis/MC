@@ -11,7 +11,7 @@ namespace Core.Application.Messages {
 		public string Payment { get; set; }
 		public decimal? Amount { get; set; }
 		public decimal AmountCharged { get; set; }
-		public double Discount { get; set; }
+		public decimal Discount { get; set; }
 		public string LoyaltyCard { get; set; }
 
 		public OrderStartedApplicationNotificationMessage() {

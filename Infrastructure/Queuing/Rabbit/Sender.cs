@@ -49,21 +49,21 @@ namespace Infrastructure.Queuing.Rabbit {
 		}
 
 		public Task SendAsync(IDomainCommand message) {
-			using (var channel = RabbitModelFactory.GetModel(_connection, Params.Queueing.QueueName.ForDomainCommand)) {
+			using (var channel = RabbitModelFactory.Direct.GetModel(_connection, Params.Queueing.QueueName.ForDomainCommand)) {
 				channel.BasicPublish("", Params.Queueing.QueueName.ForDomainCommand, channel.CreateBasicProperties(), _commandSerializer(message));
 				return Task.FromResult(true);
 			}
 		}
 
 		public Task SendAsync(IDomainEventNotificationMessage message) {
-			using (var channel = RabbitModelFactory.GetModel(_connection, Params.Queueing.QueueName.ForDomainEvent)) {
+			using (var channel = RabbitModelFactory.Direct.GetModel(_connection, Params.Queueing.QueueName.ForDomainEvent)) {
 				channel.BasicPublish("", Params.Queueing.QueueName.ForDomainEvent, channel.CreateBasicProperties(), _eventSerializer(message));
 				return Task.FromResult(true);
 			}
 		}
 
 		public Task SendAsync(IApplicationEventNotificationMessage message) {
-			using (var channel = RabbitModelFactory.GetModel(_connection, Params.Queueing.QueueName.ForApplicationEvent)) {
+			using (var channel = RabbitModelFactory.Direct.GetModel(_connection, Params.Queueing.QueueName.ForApplicationEvent)) {
 				channel.BasicPublish("", Params.Queueing.QueueName.ForApplicationEvent, channel.CreateBasicProperties(), _appEventSerializer(message));
 				return Task.FromResult(true);
 			}

@@ -40,7 +40,7 @@ namespace Core.Domain.Contexts.Ordering {
 			else
 				amountToPay = order.Products.Sum(x => x.Price);
 
-			order.Discount = discount;
+			order.Discount = order.Products.Sum(x => x.Price) - amountToPay;
 
 			try
 			{

@@ -1,12 +1,16 @@
 using System.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
-namespace Infrastructure.Serialization
-{
+namespace Infrastructure.Serialization {
 	class JsonDataSerializerNoTypeInfo<TData> : Serializer<TData> {
 
 		public override byte[] Serialize(TData data) {
-			return Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(data));
+			var result = JsonConvert.SerializeObject(data);
+#if DEBUG
+			result = JToken.Parse(result).ToString(Formatting.Indented);
+#endif
+			return Encoding.UTF8.GetBytes(result);
 		}
 
 		public override TData Deserialize(byte[] data) {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using Core;
@@ -11,6 +12,8 @@ using Infrastructure.Dispatchers;
 using Infrastructure.Services.Product;
 using Nancy;
 using Nancy.ModelBinding;
+using Nancy.Validation;
+using UI.Web.Hubs;
 using UI.Web.Models;
 
 namespace UI.Web.Modules.Order {
@@ -18,10 +21,11 @@ namespace UI.Web.Modules.Order {
 	public class OrderModule : NancyModule {
 		private readonly IItemInfoRepository<ProductInfo> _inventoryItemRepository;
 		private readonly ILogger _logger;
-		private IDomainCommandDispatcher _commandDispatcher;
+		private readonly IDomainCommandDispatcher _commandDispatcher;
 		public OrderModule(IItemInfoRepository<ProductInfo> inventoryItemRepository, ILogger logger) {
 			_inventoryItemRepository = new CachedProductInfoRepository(inventoryItemRepository);
 			_logger = logger;
+			_commandDispatcher = Bootstrapper.GetCommandDispatcher(logger, () => _commandDispatcher);
 
 			Get["/Order", true] = async (p, ct) => View[await GetOrderViewModel()];
 			Post["/Order", true] = async (p, ct) => await PostOrderViewModel(p, ct);
@@ -29,6 +33,10 @@ namespace UI.Web.Modules.Order {
 
 		private async Task<Response> PostOrderViewModel(dynamic p, CancellationToken ct) {
 			var viewModel = this.Bind<PostedOrder>();
+			var result = this.Validate(viewModel);
+
+			if (!result.IsValid)
+				return await GetValidationError(result);
 
 			var products = new List<Product>();
 
@@ -43,18 +51,20 @@ namespace UI.Web.Modules.Order {
 			return await SendCommand(command);
 		}
 
+		private Task<Response> GetValidationError(ModelValidationResult result)
+		{
+			return Task.FromResult(new Response {
+				StatusCode = HttpStatusCode.BadRequest,
+				ReasonPhrase = result.Errors.Values.Select(x=>x.First().ErrorMessage).Aggregate((x,y)=>x + "<br/>" + y)
+			});
+		}
+
 		private Task<Response> SendCommand(IDomainCommand command) {
 			Task<Response> response;
 
 			try {
-				var appEventDispatcher = EventDispathers.Application.GetQueued(_logger);
-				var domainEventDispatcher = EventDispathers.Domain.GetDirect(() => _commandDispatcher, () => appEventDispatcher, _logger);
-				domainEventDispatcher = domainEventDispatcher.Register(typeof(OrderCompletedNotificationMessage), x => new OnOrderCompleted().Notify((OrderCompletedNotificationMessage)x));
-				domainEventDispatcher = domainEventDispatcher.Register(typeof(SelfServiceOrderStartFailedNotificationMessage), x => new OnOrderFailure().Notify((SelfServiceOrderStartFailedNotificationMessage)x));
-
-				_commandDispatcher = CommandDispatchers.GetDirect(domainEventDispatcher, _logger);
 				_commandDispatcher.Dispatch(command);
-
+				
 				response = Task.FromResult(new Response {
 					StatusCode = HttpStatusCode.Accepted,
 					Headers = new Dictionary<string, string> { { "location", command.Id.ToString() } }

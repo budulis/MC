@@ -14,7 +14,7 @@ namespace Core.ReadModel {
 		public string Id { get; set; }
 		public string LoyaltyCard { get; set; }
 		public decimal AmountCharged { get; set; }
-		public double Discount { get; set; }
+		public decimal Discount { get; set; }
 		public string Products { get; set; }
 		public decimal? Amount { get; set; }
 		public string PaymentType { get; set; }

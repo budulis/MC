@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Core.Domain.Contexts.Ordering.Messages;
 using Core.Subscribers;
@@ -9,10 +11,11 @@ namespace UI.Web.Modules.Order
 {
 	public sealed class OnOrderFailure : ISubscriber<SelfServiceOrderStartFailedNotificationMessage> {
 		public async Task Notify(SelfServiceOrderStartFailedNotificationMessage evt) {
-			IHubContext hub = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
-			//Get info from ConnectionMap object to send to a specific client
-			var msg = JsonConvert.SerializeObject(new { msg = "Order [" + evt.Id + "] failed; " + evt.Reason, type = 1 });
-			await hub.Clients.All.notify(msg);
+			var hub = GlobalHost.ConnectionManager.GetHubContext<NotificationHub>();
+			var msg = JsonConvert.SerializeObject(new { msg = "Order failed; " + evt.Reason, type = 1 });
+			var notifications = ConnectionMapping<string>.Instance.GetConnections(evt.Id.ToString())
+				.Select(conn => hub.Clients.Client(conn).notify(msg)).Cast<Task>();
+			await Task.WhenAll(notifications);
 		}
 	}
 }

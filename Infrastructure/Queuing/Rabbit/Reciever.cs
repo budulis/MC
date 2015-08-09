@@ -56,7 +56,7 @@ namespace Infrastructure.Queuing.Rabbit {
 		}
 
 		public void Recieve(Action<Task<IDomainCommand>> onMessageRecieved, CancellationToken cancellationToken) {
-			using (var channel = RabbitModelFactory.GetModel(_connection, Params.Queueing.QueueName.ForDomainCommand)) {
+			using (var channel = RabbitModelFactory.Direct.GetModel(_connection, Params.Queueing.QueueName.ForDomainCommand)) {
 
 				var consumer = new QueueingBasicConsumer(channel);
 				channel.BasicConsume(Params.Queueing.QueueName.ForDomainCommand, false, consumer);
@@ -87,7 +87,7 @@ namespace Infrastructure.Queuing.Rabbit {
 		}
 
 		public void Recieve(Action<Task<IDomainEventNotificationMessage>> onMessageRecieved, CancellationToken cancellationToken) {
-			using (var channel = RabbitModelFactory.GetModel(_connection, Params.Queueing.QueueName.ForDomainEvent)) {
+			using (var channel = RabbitModelFactory.Direct.GetModel(_connection, Params.Queueing.QueueName.ForDomainEvent)) {
 
 				var consumer = new QueueingBasicConsumer(channel);
 				channel.BasicConsume(Params.Queueing.QueueName.ForDomainEvent, false, consumer);
@@ -113,7 +113,7 @@ namespace Infrastructure.Queuing.Rabbit {
 		}
 		
 		public void Recieve(Action<Task<IApplicationEventNotificationMessage>> onMessageRecieved, CancellationToken cancellationToken) {
-			using (var channel = RabbitModelFactory.GetModel(_connection, Params.Queueing.QueueName.ForApplicationEvent)) {
+			using (var channel = RabbitModelFactory.Direct.GetModel(_connection, Params.Queueing.QueueName.ForApplicationEvent)) {
 
 				var consumer = new QueueingBasicConsumer(channel);
 				channel.BasicConsume(Params.Queueing.QueueName.ForDomainEvent, false, consumer);

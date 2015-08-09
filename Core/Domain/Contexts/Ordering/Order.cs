@@ -11,7 +11,7 @@ namespace Core.Domain.Contexts.Ordering {
 		public Cashier Cashier { get; private set; }
 		public Payment Payment { get; private set; }
 		public decimal AmountCharged { get; internal set; }
-		public double Discount { get; internal set; }
+		public decimal Discount { get; internal set; }
 		internal ILogger Logger { get; set; }
 
 		#region ctor

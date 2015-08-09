@@ -7,9 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
-namespace Infrastructure.EventStore
-{
+namespace Infrastructure.EventStore {
 	internal class SqlServerEventStore : IEventStore {
 		private readonly DataBaseContext _db;
 
@@ -43,14 +43,18 @@ namespace Infrastructure.EventStore
 			};
 
 			var eventData = from e in events
-				let evt = JsonConvert.SerializeObject(e, settings)
-				select JsonConvert.SerializeObject(new StoreEvent {Data = evt, Type = e.GetType().AssemblyQualifiedName});
+											let evt = JsonConvert.SerializeObject(e, settings)
+#if DEBUG
+											select JToken.Parse(JsonConvert.SerializeObject(new StoreEvent { Data = evt, Type = e.GetType().AssemblyQualifiedName })).ToString(Formatting.Indented);
+#else
+											select JsonConvert.SerializeObject(new StoreEvent { Data = evt, Type = e.GetType().AssemblyQualifiedName });
+#endif
 
 			await _db.InsertEvents.ExecuteAsync(aggregateId.ToString(), key, eventData);
 		}
 
 		public async Task<IEnumerable<TDomainEvent>> GetAsync<TDomainEvent>(Type aggregateType, Id aggregateId) where TDomainEvent : IDomainEvent {
-			
+
 			var key = String.Format("{0}:{1}", aggregateType.FullName, aggregateId);
 			var events = await _db.SelectAllEventsByKey.ExecuteAsync(key);
 

@@ -1,17 +1,15 @@
-﻿/////////////////////////////////////////////////////////////////////////
-// SignalR specific code
-/////////////////////////////////////////////////////////////////////////
-
-var hub = $.connection.notificationHub;
+﻿var hub = $.connection.notificationHub;
 var connected = false;
 
 hub.client.notify = function (msg) {
     var data = jQuery.parseJSON(msg);
 
     if (data.type === 0)
-        showInfoToast(data.msg);
+        showSuccessToast(data.msg);
     if (data.type === 1)
         showErrorToast(data.msg);
+    if (data.type === 2)
+        setRecieptData(data.msg);
 };
 
 
@@ -22,8 +20,9 @@ function subscribe_for_status_updates(orderid) {
             subscribe(orderid);
         });
 }
-//move subscription to server side to avoid notification message race 
 function subscribe(ordeId) {
     hub.server.subscribe(ordeId);
 }
+
+
 

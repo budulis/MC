@@ -27,6 +27,7 @@ namespace Core.Subscribers
 			});
 
 			await _applicationEventDispather.Dispatch(evt.ToApplicationNotificatioMessage());
+
 			await DomainCommandDispatcher.Dispatch(new CreateProductionOrder(evt.Id, evt.Products,OrderType.Self));
 		}
 	}

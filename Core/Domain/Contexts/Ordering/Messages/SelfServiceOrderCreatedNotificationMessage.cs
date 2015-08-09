@@ -15,17 +15,18 @@ namespace Core.Domain.Contexts.Ordering.Messages
 		public string CardNumber { get; set; }
 		public string LoyaltyCardNumber { get; set; }
 		public decimal AmountCharged { get; set; }
-		public double Discount { get; set; }
+		public decimal Discount { get; set; }
 
 		public IApplicationEventNotificationMessage ToApplicationNotificatioMessage()
 		{
+			var amount = Products.Sum(x => x.Price);
 			return new OrderStartedApplicationNotificationMessage
 			{
 				Id = Id,
-				Amount = Products.Sum(x=>x.Price),
+				Amount = amount,
 				AmountCharged = AmountCharged,
 				Date = Date,
-				Discount = Discount,
+				Discount = amount - AmountCharged,
 				LoyaltyCard = LoyaltyCardNumber,
 				Payment = PaymentType.Card.ToString(),
 				Products = Products,

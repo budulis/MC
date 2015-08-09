@@ -13,9 +13,9 @@ namespace Core.Domain.Contexts.Ordering.Events
 		public string CardNumber { get; private set; }
 		public string LoyaltyCardNumber { get; private set; }
 		public decimal AmountCharged { get; private set; }
-		public double Discount { get; private set; }
+		public decimal Discount { get; private set; }
 
-		public SelfServiceOrderCreated(Id id, IEnumerable<Product> products, string customerName, string comments, string cardNumber, string loyaltyCardNumber, double discount, decimal amountCharged)
+		public SelfServiceOrderCreated(Id id, IEnumerable<Product> products, string customerName, string comments, string cardNumber, string loyaltyCardNumber, decimal discount, decimal amountCharged)
 		{
 			AmountCharged = amountCharged;
 			Discount = discount;

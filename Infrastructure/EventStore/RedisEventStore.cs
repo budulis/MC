@@ -6,6 +6,7 @@ using Core;
 using Core.Domain;
 using Infrastructure.Services.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using StackExchange.Redis;
 
 namespace Infrastructure.EventStore {
@@ -46,7 +47,12 @@ namespace Infrastructure.EventStore {
 			foreach (var domainEvent in events) {
 				Logger.Audit(new { key, domainEvent });
 				var evt = JsonConvert.SerializeObject(domainEvent, settings);
-				await db.ListRightPushAsync(key, JsonConvert.SerializeObject(new StoreEvent { Data = evt, Type = domainEvent.GetType().AssemblyQualifiedName }));
+
+				var result = JsonConvert.SerializeObject(new StoreEvent { Data = evt, Type = domainEvent.GetType().AssemblyQualifiedName });
+#if DEBUG
+				result = JToken.Parse(result).ToString(Formatting.Indented);
+#endif
+				await db.ListRightPushAsync(key, result);
 			}
 
 			await transaction.ExecuteAsync();

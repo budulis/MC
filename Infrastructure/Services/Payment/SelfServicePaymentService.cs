@@ -16,7 +16,9 @@ namespace Infrastructure.Services.Payment {
 			DiscountService = discountService;
 		}
 
-		public SelfServicePaymentResult ProcessPayment(IEnumerable<Core.Domain.Product> products, string paymentCardNumber, string loyaltyCardNumber) {
+		public SelfServicePaymentResult ProcessPayment(IEnumerable<Core.Domain.Product> products, string paymentCardNumber, string loyaltyCardNumber)
+		{
+			decimal initialAmount = products.Sum(x => x.Price);
 			decimal amountToPay;
 			var discount = 0D;
 
@@ -26,16 +28,16 @@ namespace Infrastructure.Services.Payment {
 				li = LoyaltyProgrammService.GetInfo(loyaltyCardNumber);
 
 			if (DiscountService != null)
-				amountToPay = DiscountService.ApplyDiscount(li.CardType, products.Sum(x => x.Price), out discount);
+				amountToPay = DiscountService.ApplyDiscount(li.CardType, initialAmount, out discount);
 			else
-				amountToPay = products.Sum(x => x.Price);
+				amountToPay = initialAmount;
 
 			ProcessPayment(amountToPay, paymentCardNumber);
 
 			var result = new SelfServicePaymentResult
 			{
 				AmountCharged = amountToPay,
-				Discount = discount
+				Discount = initialAmount - amountToPay
 			};
 
 			return result;

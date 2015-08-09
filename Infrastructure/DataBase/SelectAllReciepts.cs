@@ -35,7 +35,7 @@ namespace Infrastructure.DataBase
 							Products = reader["Products"] == null ? null : reader["Products"].ToString(),
 							Amount = Convert.ToDecimal(reader["Amount"]),
 							AmountCharged = Convert.ToDecimal(reader["AmountCharged"]),
-							Discount = Convert.ToDouble(reader["Discount"]),
+							Discount = Convert.ToDecimal(reader["Discount"]),
 							LoyaltyCard = reader["LoyaltyCard"] == null ? null : reader["LoyaltyCard"].ToString(),
 						};
 						orders.Add(receipt);
